@@ -1,0 +1,41 @@
+% Introduction: DRAFT v0.1 (Week 4). Replaces the Introduction block in main.tex.
+% Needs the entries in references_week4.bib appended to references.bib.
+\section{Introduction} \label{cha:intro}
+
+Students need timely and accurate answers about admissions, course registration, assessment deadlines, fees, financial aid and academic regulations. At Heriot-Watt University Malaysia this information is spread across web pages, PDF policies and emails, so students must search several places and staff answer many repetitive queries. Large language models (LLMs) can answer such questions fluently, but they can also produce confident statements that no source supports, a problem known as hallucination \cite{ji2023survey}. For university-specific facts such as a fee, a deadline or a late-submission penalty, an unsupported answer can cause real harm. This project designs, implements and evaluates a university support assistant that answers only from official documents, shows its sources, and hands the question to staff when it is not confident.
+
+\subsection{Background and Motivation} \label{sec:intro_motiv}
+
+Retrieval-augmented generation (RAG) \cite{lewis2020rag} addresses part of this problem. It retrieves relevant passages from a document collection and gives them to an LLM as context, so that answers can be grounded in, and traced back to, those passages. Surveys describe how RAG has grown into a family of designs for retrieval, generation and augmentation \cite{gao2023rag}. RAG alone does not guarantee a correct answer: retrieval can miss the relevant passage, and a generator may still answer from its own knowledge when the retrieved text is insufficient. A complementary line of work studies abstention, where a system declines to answer when it should not \cite{wen2025know}. Evaluating this behaviour needs questions that the knowledge base cannot answer, in addition to answerable ones \cite{peng2025unanswerability}.
+
+University chatbots built on RAG already exist. Marcel, for example, answers admission questions from scraped university web pages, hides its sources when it abstains, and evaluates retrieval and generation on questions that are answerable and unanswerable from its knowledge base \cite{trienes2025marcel}. Earlier admissions chatbots used intent-based dialogue management instead \cite{nguyen2021neu}. In Marcel the decision to abstain is left to the answer-generation prompt, and the authors suggest that other ways of judging answerability are worth investigating \cite{trienes2025marcel}. This project builds on that observation. Rather than only building another chatbot, it treats the decision to answer or escalate as a measurable component, and compares it against simpler alternatives on a test set specific to the university.
+
+\subsection{Aim and Objectives} \label{sec:intro_aim}
+
+The aim is to design, implement and rigorously evaluate a grounded, source-citing, escalation-aware chatbot for university student support, and to quantify its benefits and limits against simpler alternatives. The objectives are:
+
+\begin{description}
+  \item[O1] Review the literature on educational chatbots, RAG, hallucination and abstention, and identify the gap this project addresses.
+  \item[O2] Build a versioned knowledge base from public university documents.
+  \item[O3] Implement four comparable systems: an FAQ-matching baseline, a plain LLM, RAG with citations, and RAG with confidence-based escalation.
+  \item[O4] Build a labelled test set of about 200 student questions across topics and difficulty types, including questions that cannot be answered from the documents.
+  \item[O5] Implement a confidence-based escalation mechanism and tune its threshold on a development split.
+  \item[O6] Evaluate the systems on correctness, faithfulness, retrieval quality, escalation quality, latency and cost, using paired statistical tests.
+  \item[O7] Deliver a web interface for demonstration and, if ethics approval is granted, a small usability study.
+  \item[O8] Reflect critically on limitations, threats to validity and ethical issues.
+\end{description}
+
+The project investigates four research questions:
+
+\begin{description}
+  \item[RQ1] How much more accurate and faithful is RAG than an FAQ-matching baseline and a plain LLM on university-specific questions?
+  \item[RQ2] Which retrieval design choices (chunking, number of retrieved passages, dense, lexical or hybrid retrieval) matter most?
+  \item[RQ3] Does confidence-based escalation reduce incorrect answers, and what fraction of answerable questions does it wrongly escalate?
+  \item[RQ4] (optional, subject to ethics approval) Do students find the assistant usable and trustworthy compared with searching the university website?
+\end{description}
+
+Meeting these objectives means solving four problems: turning heterogeneous web pages and PDFs into a clean, versioned knowledge base; generating answers that stay within the retrieved evidence and cite it; deciding when the evidence is too weak to answer; and measuring all of this fairly, including on questions that should not be answered.
+
+\subsection{Organisation} \label{sec:intro_orga}
+
+Section~\ref{cha:back} reviews related work on RAG, hallucination, abstention, university chatbots and the evaluation of RAG systems. The following sections set out the methodology and requirements, and the feasibility work carried out so far, including the pilot study, and then conclude. The back matter contains the references, the project management plan (Gantt chart, risk analysis and professional, legal, ethical and social issues), a summary of generative AI use, and the appendices.
