@@ -18,7 +18,7 @@ A Python chatbot for answering student questions from official university docume
 - `tests/`: unit tests
 - `docs/`: journal, meeting notes, weekly updates, reading list
 - `ethics/`: ethics application documents
-- `d1/`: D1 report drafts and bibliography
+- `d1/`: D1 report LaTeX (main copy, upload changed files to Overleaf)
 - `tools/`: helper scripts (journal builder)
 
 ## Run the pilot

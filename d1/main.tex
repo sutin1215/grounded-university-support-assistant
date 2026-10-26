@@ -1,5 +1,59 @@
-% Introduction: DRAFT v0.1 (Week 4). Replaces the Introduction block in main.tex.
-% Needs the entries in references_week4.bib appended to references.bib.
+\documentclass[12pt,nonacm,acmlarge,titlepage,screen]{acmart}
+
+% make ACM settings and load extra packages
+\input{hwu_template/acm_settings}
+\input{hwu_template/packages}
+
+% document details
+% replace those with your details
+\def\docTitle{A Grounded University Support Assistant: Retrieval-Augmented Generation with Confidence-Based Escalation}
+\def\docAuthor{\textsc{Muhammad Faizal Haris Aidi}}
+\def\docAuthorID{H00459013}
+\def\docSupervisor{\textsc{Dr. Rosalind Deena Kumari}}
+\def\docDegree{BSc (Hons) Computing Science}
+%\def\docDegree{MSc Cookery}
+\def\docType{Research Report}
+% \def\docType{Honours Dissertation}
+% \def\docType{Masters Dissertation}
+\def\docCourse{F20PA/B/C - Honours Project}
+% \def\docCourse{F21RP - Research Methods and Project Planning}
+% \def\docCourse{F21MP - Masters Project and Dissertation}
+
+% load extra formatting
+\input{hwu_template/format}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FRONT MATTER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{hwu_template/titlepage}
+
+\newpage
+\pagenumbering{roman}
+
+\input{hwu_template/declaration}
+
+% Acknowledgements
+\acknowledgements{
+Acknowledgements text.
+}
+
+% Abstract
+\abstract{
+University students often struggle to find accurate answers about fees, deadlines and regulations that are spread across web pages, PDFs and emails, and general-purpose chatbots can answer such questions confidently yet incorrectly. This project designs, implements and evaluates a university support assistant that uses retrieval-augmented generation (RAG) to answer only from official university documents, cites its sources, and escalates to staff when its confidence is low. Four systems will be compared on the same knowledge base and a purpose-built test set of about 200 student questions: an FAQ-matching baseline, a plain large language model, RAG with citations, and RAG with confidence-based escalation. The evaluation will measure answer correctness, hallucination, citation accuracy, retrieval quality, escalation precision and recall, latency and cost, using paired statistical tests, and may include a small usability study subject to ethics approval. This report presents the motivation, related work, methodology and feasibility work that show the project can be completed in Semester 2.
+}
+
+\input{hwu_template/contents}
+	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MAIN BODY
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\pagenumbering{arabic}
+
+% Introduction
+%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} \label{cha:intro}
 
 Students need timely and accurate answers about admissions, course registration, assessment deadlines, fees, financial aid and academic regulations. At Heriot-Watt University Malaysia this information is spread across web pages, PDF policies and emails, so students must search several places and staff answer many repetitive queries. Large language models (LLMs) can answer such questions fluently, but they can also produce confident statements that no source supports, a problem known as hallucination \cite{ji2023survey}. For university-specific facts such as a fee, a deadline or a late-submission penalty, an unsupported answer can cause real harm. This project designs, implements and evaluates a university support assistant that answers only from official documents, shows its sources, and hands the question to staff when it is not confident.
@@ -39,3 +93,98 @@ Meeting these objectives means solving four problems: turning heterogeneous web 
 \subsection{Organisation} \label{sec:intro_orga}
 
 Section~\ref{cha:back} reviews related work on RAG, hallucination, abstention, university chatbots and the evaluation of RAG systems. The following sections set out the methodology and requirements, and the feasibility work carried out so far, including the pilot study, and then conclude. The back matter contains the references, the project management plan (Gantt chart, risk analysis and professional, legal, ethical and social issues), a summary of generative AI use, and the appendices.
+
+
+% Background Research
+%%%%%%%%%%%%%%%%%%%%
+\section{Background Research} \label{cha:back}
+% TODO (Week 4-6): write from the reading notes. Cite only papers you have read.
+
+\subsection{Retrieval-Augmented Generation} \label{sec:back_rag}
+% Lewis et al. 2020; Gao et al. 2023.
+
+\subsection{Hallucination and Grounding} \label{sec:back_halluc}
+% Ji et al. 2023.
+
+\subsection{Abstention and Confidence} \label{sec:back_abst}
+% Wen et al. 2025; Peng et al. 2025.
+
+\subsection{University Support Chatbots} \label{sec:back_chat}
+% Trienes et al. 2025 (Marcel); Nguyen et al. 2021; optionally Odede and Frommholz 2024.
+
+\subsection{Evaluating RAG Systems} \label{sec:back_eval}
+% Es et al. 2024 (RAGAs); Zheng et al. 2023 (LLM as judge); Cormack et al. 2009 for hybrid retrieval.
+
+\subsection{Research Gap} \label{sec:back_gap}
+% End with the gap that leads to RQ1-RQ3.
+
+% Methodology
+%%%%%%%%%%%%%%%%%%%%
+\section{Methodology} \label{cha:method}
+% TODO (Weeks 6-8): methods, requirements and research questions, linked to the aim and objectives.
+
+\subsection{Research Approach} \label{sec:method_approach}
+
+\subsection{The Four Systems} \label{sec:method_systems}
+
+\subsection{Requirements} \label{sec:method_req}
+% MoSCoW table of functional and non-functional requirements.
+
+\subsection{Evaluation Plan} \label{sec:method_eval}
+% Metrics, test set, development/test split, statistics.
+
+\subsection{Success Criteria} \label{sec:method_success}
+
+% Feasibility
+%%%%%%%%%%%%%%%%%%%%
+\section{Feasibility} \label{cha:feas}
+% TODO (Weeks 5-8): design, evaluation strategy and preliminary work (pilot, document sources, tool tests).
+
+\subsection{Document Sources} \label{sec:feas_docs}
+
+\subsection{Pilot Study} \label{sec:feas_pilot}
+
+\subsection{Tools and Technology Choices} \label{sec:feas_tools}
+
+% Conclusions
+%%%%%%%%%%%%%%%%%%%%
+\section{Conclusions} \label{cha:concl}
+% TODO (Week 10): short summary of the whole document.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BACK MATTER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% References
+\input{hwu_template/references}
+
+% Appendices
+\newpage
+\appendix
+
+\crefalias{chapter}{appendixchapter} % for appendix crossreferences
+
+\section{Project Management}
+
+\subsection{Gantt Chart}
+% Semester 1 activities carried out and Semester 2 plan.
+
+\subsection{Risk Analysis}
+% Risk table with likelihood, impact, mitigation and contingency.
+
+\subsection{Professional, Legal, Ethical and Social Issues}
+% BCS code of conduct, document copyright and terms of use, data protection, ethics approval, social impact.
+
+\section{Generative AI Summary}
+% Required section: summary of GenAI use in the project and deliverables.
+
+\section{Participant Information Sheet and Consent Form}
+% Only if the usability study or peer labelling goes ahead (see the ethics application).
+
+\section{Research Participant Questionnaire}
+% Sample questionnaire, if the usability study goes ahead.
+
+% Rest of appendices...
+
+\end{document}
