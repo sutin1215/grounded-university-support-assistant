@@ -39,7 +39,11 @@ def main():
     cfg = load_config()
     k = cfg["retrieval"]["top_k"]
     chunks = load_chunks(cfg)
-    questions = load_questions(cfg)
+    all_questions = load_questions(cfg)
+    have = {c["doc"] for c in chunks}
+    # Skip answerable questions whose source document is not in data/raw yet.
+    questions = [q for q in all_questions if q["answerable"] == "no" or q["gold_doc"] in have]
+    skipped = [q["qid"] for q in all_questions if q not in questions]
     answerable = [q for q in questions if q["answerable"] == "yes"]
     unanswerable = [q for q in questions if q["answerable"] == "no"]
     rows, summary = [], {}
@@ -91,6 +95,7 @@ def main():
              f"- Chunks: {len(chunks)} (about {cfg['chunking']['words_per_chunk']} words, "
              f"{cfg['chunking']['overlap_words']} overlap)",
              f"- Questions: {len(questions)} ({len(answerable)} answerable, {len(unanswerable)} unanswerable)",
+             f"- Skipped (source document not downloaded): {', '.join(skipped) or 'none'}",
              "", f"## Retrieval (answerable questions, top {k})", "",
              "| Method | Hit@1 | Hit@%d | Doc hit@%d | MRR |" % (k, k), "|---|---|---|---|---|"]
     for m, s in summary.items():

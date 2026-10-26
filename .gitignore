@@ -42,3 +42,6 @@ data/raw/
 data/chroma/
 *.sqlite
 data/processed/
+
+# Submitted ethics application (personal details) - keep local while the repo is public
+ethics/Ethics_Application_submitted_*.pdf
