@@ -16,9 +16,9 @@ from src.retrieve import BM25Retriever, load_chunks
 
 DEMO_QUESTIONS = [
     "Can I self-certify if I was sick for a few days?",          # both work
-    "Can I ask my lecturer for an extension on an assignment?",  # FAQ helps, retrieval misses wording
+    "Can I ask my lecturer for an extension on an assignment?",  # both miss: "extension" vs "extensions" (no stemming yet)
     "What is the charge if I pay my fees after the deadline?",   # not in documents: FAQ answers wrongly
-    "What time does the library close on Saturdays?",            # not in documents: should escalate
+    "What time does the library close on Saturdays?",            # not in documents: retrieval still returns passages, so escalation is needed
 ]
 
 
