@@ -61,7 +61,7 @@ No change to the title since Journal 1.
 
 ## Overall reflection
 Week 4 went to plan: the reading list, the official document source list, the D1 Introduction and the ethics outline were all completed, and my supervisor confirmed in Week 5 that the public documents can be used, which removes the main risk I flagged in Journal 1.
-Week 5 did not go to plan. The pilot (document ingestion, the FAQ baseline and 20 to 30 pilot questions) and the start of the ethics form were planned for this week but were not started. [ADD YOUR REASON IN ONE SENTENCE] As a result the pilot is now about two weeks behind, so I have moved it into Week 7 and will keep the ethics work on its own track so the ethics deadline is not affected.
+Week 5 did not go to plan. The pilot (document ingestion, the FAQ baseline and 20 to 30 pilot questions) and the start of the ethics form were planned for this week but were not started. Most of my time that week went into another course assignment, which needed far more study and work than I had planned for. As a result the pilot is now about two weeks behind, so I have moved it into Week 7 and will keep the ethics work on its own track so the ethics deadline is not affected.
 Direction: behind on the pilot, on track for the ethics deadline (30 Oct) and for D1/D2 (26 Nov) if the pilot is completed in Week 7.
 
 ## Additional section, if needed
