@@ -1,28 +1,49 @@
 qid,method,rank_of_gold,doc_hit_at_k,top1
+Q01,bm25,2,1,mc-procedure.pdf p4
+Q02,bm25,1,1,ltbp-submission-coursework.pdf p1
+Q03,bm25,,0,Fee-International.pdf p1
+Q04,bm25,1,1,ltbp-submission-coursework.pdf p1
+Q05,bm25,1,1,ltbp-submission-coursework.pdf p1
 Q06,bm25,1,1,mc-procedure.pdf p3
 Q07,bm25,1,1,mc-procedure.pdf p2
 Q08,bm25,5,1,mc-procedure.pdf p6
 Q09,bm25,1,1,mc-procedure.pdf p2
 Q10,bm25,1,1,hapsug.pdf p1
 Q11,bm25,1,1,hapsug.pdf p1
-Q12,bm25,4,1,mc-procedure.pdf p4
+Q12,bm25,5,1,mc-procedure.pdf p4
 Q13,bm25,1,1,hapsug.pdf p1
 Q14,bm25,1,1,Fee-International.pdf p1
 Q15,bm25,1,1,Fee-International.pdf p4
-Q16,bm25,1,1,Fee-International.pdf p3
-Q17,bm25,1,1,Fee-International.pdf p4
+Q16,bm25,2,1,Fees-and-payment-guide-Malaysia.pdf p15
+Q17,bm25,4,1,Fees-and-payment-guide-Malaysia.pdf p18
+Q18,bm25,5,1,Fees-and-payment-guide-Malaysia.pdf p9
+Q19,bm25,,1,Fees-and-payment-guide-Malaysia.pdf p17
+Q20,bm25,1,1,Fees-and-payment-guide-Malaysia.pdf p18
+Q01,tfidf,2,1,mc-procedure.pdf p4
+Q02,tfidf,1,1,ltbp-submission-coursework.pdf p1
+Q03,tfidf,,0,mc-procedure.pdf p8
+Q04,tfidf,1,1,ltbp-submission-coursework.pdf p1
+Q05,tfidf,1,1,ltbp-submission-coursework.pdf p1
 Q06,tfidf,1,1,mc-procedure.pdf p2
 Q07,tfidf,2,1,mc-procedure.pdf p1
 Q08,tfidf,,1,mc-procedure.pdf p2
-Q09,tfidf,3,1,mc-procedure.pdf p6
+Q09,tfidf,2,1,mc-procedure.pdf p6
 Q10,tfidf,1,1,hapsug.pdf p1
 Q11,tfidf,1,1,hapsug.pdf p1
-Q12,tfidf,4,1,mc-procedure.pdf p4
+Q12,tfidf,3,1,mc-procedure.pdf p4
 Q13,tfidf,1,1,hapsug.pdf p1
-Q14,tfidf,1,1,Fee-International.pdf p1
+Q14,tfidf,2,1,Fees-and-payment-guide-Malaysia.pdf p15
 Q15,tfidf,1,1,Fee-International.pdf p4
-Q16,tfidf,1,1,Fee-International.pdf p1
-Q17,tfidf,1,1,Fee-International.pdf p2
+Q16,tfidf,2,1,Fees-and-payment-guide-Malaysia.pdf p15
+Q17,tfidf,4,1,Fees-and-payment-guide-Malaysia.pdf p9
+Q18,tfidf,,1,Fees-and-payment-guide-Malaysia.pdf p18
+Q19,tfidf,5,1,Fees-and-payment-guide-Malaysia.pdf p9
+Q20,tfidf,1,1,Fees-and-payment-guide-Malaysia.pdf p18
+Q01,S1_faq,,,F01 (sim 0.61)
+Q02,S1_faq,,,F02 (sim 0.57)
+Q03,S1_faq,,,ESCALATE (sim 0.00)
+Q04,S1_faq,,,F01 (sim 0.52)
+Q05,S1_faq,,,ESCALATE (sim 0.31)
 Q06,S1_faq,,,F04 (sim 0.60)
 Q07,S1_faq,,,F05 (sim 1.00)
 Q08,S1_faq,,,F04 (sim 0.60)
@@ -35,6 +56,9 @@ Q14,S1_faq,,,ESCALATE (sim 0.27)
 Q15,S1_faq,,,F10 (sim 0.35)
 Q16,S1_faq,,,F12 (sim 0.45)
 Q17,S1_faq,,,F10 (sim 0.75)
+Q18,S1_faq,,,F09 (sim 0.63)
+Q19,S1_faq,,,F10 (sim 0.35)
+Q20,S1_faq,,,F12 (sim 0.77)
 U01,S1_faq,,,ESCALATE (sim 0.00)
 U02,S1_faq,,,ESCALATE (sim 0.00)
 U03,S1_faq,,,F10 (sim 0.35)
