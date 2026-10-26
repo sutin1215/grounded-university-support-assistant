@@ -1,0 +1,18 @@
+# Pilot configuration (Week 7). Values are starting points, tuned later on the dev split.
+raw_dir: data/raw
+chunks_path: data/processed/chunks.jsonl
+faq_path: data/faq.csv
+questions_path: eval/pilot_questions.csv
+results_dir: eval/results
+
+chunking:
+  words_per_chunk: 220   # roughly one or two paragraphs
+  overlap_words: 40
+
+retrieval:
+  top_k: 5
+  methods: [bm25, tfidf]
+
+faq_baseline:
+  # S1 answers only when the best FAQ match is at least this similar; otherwise it escalates.
+  min_similarity: 0.35

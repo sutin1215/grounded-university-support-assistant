@@ -21,6 +21,14 @@ A Python chatbot for answering student questions from official university docume
 - `d1/`: D1 report drafts and bibliography
 - `tools/`: helper scripts (journal builder)
 
-## Run
+## Run the pilot
 
-Coming soon
+```bash
+pip install -r requirements.txt
+# put the official PDFs listed in data/doc_sources.csv into data/raw/ (not committed)
+python -m src.ingest          # PDFs -> data/processed/chunks.jsonl
+python -m eval.locate_gold    # find the page of each gold answer
+python -m eval.run_pilot      # retrieval (BM25 vs TF-IDF) + S1 FAQ baseline -> eval/results/
+python -m src.retrieve "What is the penalty for late coursework?"   # demo with citations
+python -m pytest -q
+```

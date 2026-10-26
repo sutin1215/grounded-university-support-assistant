@@ -41,3 +41,4 @@ htmlcov/
 data/raw/
 data/chroma/
 *.sqlite
+data/processed/
