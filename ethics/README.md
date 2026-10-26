@@ -1,6 +1,6 @@
 # Ethics
 
-Application submitted on the HWU ethics system (Infonetica) after supervisor sign-off, Week 7 (October 2026).
+Draft sent to the supervisor on 21 Oct 2026 (Week 6); signed by the supervisor and submitted on the HWU ethics system (Infonetica) on 26 Oct 2026 (Week 7).
 The documents uploaded with it were prepared from these files:
 
 - `Information_Sheet_FILLED.docx`: participant information sheet
