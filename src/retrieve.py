@@ -60,6 +60,7 @@ def build(name: str, chunks):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # safe on Windows consoles
     cfg = load_config()
     query = " ".join(sys.argv[1:]) or "What is the penalty for late submission of coursework?"
     chunks = load_chunks(cfg)

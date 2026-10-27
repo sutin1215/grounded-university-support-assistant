@@ -37,6 +37,7 @@ def show(question, faq, retriever, k=3):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # safe on Windows consoles
     cfg = load_config()
     faq = FAQBaseline(load_faq(cfg), cfg["faq_baseline"]["min_similarity"])
     retriever = BM25Retriever(load_chunks(cfg))
