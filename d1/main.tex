@@ -98,25 +98,48 @@ Section~\ref{cha:back} reviews related work on RAG, hallucination, abstention, u
 % Background Research
 %%%%%%%%%%%%%%%%%%%%
 \section{Background Research} \label{cha:back}
-% TODO (Week 4-6): write from the reading notes. Cite only papers you have read.
+
+This section reviews the work that the project builds on. It covers retrieval-augmented generation and the retrieval methods behind it, hallucination, abstention, existing university support chatbots, and how such systems are evaluated. It ends by naming the gaps that lead to the research questions in Section~\ref{sec:intro_aim}.
 
 \subsection{Retrieval-Augmented Generation} \label{sec:back_rag}
-% Lewis et al. 2020; Gao et al. 2023.
+
+\citet{lewis2020rag} introduced retrieval-augmented generation (RAG), which combines a pre-trained sequence-to-sequence model (its \emph{parametric} memory) with a dense vector index of Wikipedia that a neural retriever searches at query time (its \emph{non-parametric} memory). Generating from retrieved passages set new results on open-domain question answering and produced more specific and factual text than a model using only its parameters. Two properties of this design matter for a university assistant. First, the knowledge can be updated by replacing the document index rather than retraining the model, which suits policies and fee tables that change every year. Second, each answer can be traced back to the passages it was generated from, which makes citation possible.
+
+Since then RAG has grown into a family of designs. \citet{gao2023rag} group them into \emph{naive} RAG (retrieve, then generate), \emph{advanced} RAG (adding steps such as query rewriting and re-ranking) and \emph{modular} RAG (flexible pipelines built from interchangeable parts). The survey also shows that most of the design decisions, such as how documents are split into chunks, how many passages are retrieved and which retriever is used, have no single best setting and must be chosen for the task. This motivates RQ2: rather than assuming a configuration, this project measures which choices matter on university documents.
+
+The retriever itself can be lexical or dense. Lexical retrievers such as BM25 \cite{robertson2009bm25} score passages by the query words they contain, giving more weight to rare terms. They are fast, need no training and handle exact terms well, such as course codes, amounts and policy names, but they fail when the question and the document use different words. Dense retrievers encode questions and passages as vectors, either with a model trained for retrieval such as DPR \cite{karpukhin2020dpr} or with general sentence embeddings such as Sentence-BERT \cite{reimers2019sbert}, so that passages with the same meaning but different wording can still be matched. They can, however, miss rare exact terms. The two can be combined with reciprocal rank fusion \cite{cormack2009reciprocal}, which merges ranked lists using only the rank of each item and was shown to outperform more complex fusion methods. The pilot in Section~\ref{sec:feas_pilot} already shows the lexical weakness: a question about an ``extension'' failed to match a policy that only mentions ``extensions''. This is the reason for comparing lexical, dense and hybrid retrieval in RQ2.
 
 \subsection{Hallucination and Grounding} \label{sec:back_halluc}
-% Ji et al. 2023.
+
+\citet{ji2023survey} define hallucination as generated content that is nonsensical or unfaithful to the provided source. They distinguish \emph{intrinsic} hallucination, which contradicts the source, from \emph{extrinsic} hallucination, which cannot be verified from it. Both matter here. An intrinsic error might state the wrong late-submission penalty; an extrinsic one might invent a refund rule that no document mentions. Retrieval reduces hallucination by giving the model the relevant text, but it does not remove it. If the retriever misses the right passage, the model may answer from its training data instead, which for a specific university is often outdated or simply wrong. For this reason the project measures faithfulness (whether each claim is supported by the retrieved passages) and citation accuracy separately from correctness, and treats an answer without support as a failure even if it happens to be true.
 
 \subsection{Abstention and Confidence} \label{sec:back_abst}
-% Wen et al. 2025; Peng et al. 2025.
+
+A system that answers every question will eventually answer one it should not. \citet{wen2025know} survey \emph{abstention}, the ability of a language model to decline to answer, and analyse it from three perspectives: the query (for example, questions that are ambiguous or have no answer), the model (whether it has the knowledge and how confident it is) and human values (whether an answer would be harmful). They review methods across the model life cycle, from training to inference, and treat reliable abstention as an open problem at every stage. For a support assistant, abstaining is not enough on its own: the student still needs an answer, so the assistant should \emph{escalate} the question to staff.
+
+Deciding when to escalate is a form of selective prediction, where a system may reject inputs on which it is likely to be wrong \cite{geifman2017selective}. The quality of such a system is described by a risk--coverage trade-off: answering fewer questions (lower coverage) should lower the error rate on the questions it does answer (lower risk). This framing gives the project a way to evaluate escalation as a measurable component, by plotting risk against coverage for different confidence thresholds rather than reporting a single accuracy figure. Possible confidence signals in RAG include the retrieval scores, the agreement between retrieved passages, and the model's own estimate of whether the passages support an answer; RQ3 tests whether such signals reduce incorrect answers without escalating too many answerable questions.
 
 \subsection{University Support Chatbots} \label{sec:back_chat}
-% Trienes et al. 2025 (Marcel); Nguyen et al. 2021; optionally Odede and Frommholz 2024.
+
+Chatbots for student support predate large language models. Early systems such as the NEU-chatbot for university admissions \cite{nguyen2021neu} used intent classification: each user question is mapped to one of a fixed set of intents, and a prepared answer is returned. This approach is predictable and cheap, but it only covers the questions its designers anticipated, and it can return a confident but wrong answer when a new question resembles an existing intent. The FAQ baseline (S1) in this project represents this approach. The pilot confirms its weakness: asked about a late-payment charge, it returned the answer for the fee due date.
+
+More recent systems use LLMs. JayBot \cite{odede2024jaybot} is an LLM-based chatbot for students and admissions evaluated with users. Marcel \cite{trienes2025marcel} is the closest work to this project: a lightweight, open-source RAG assistant that answers prospective students' admission questions from university web pages, and adds a retriever that maps questions to curated FAQ entries so that staff can steer its answers. Marcel was evaluated on retrieval and generation using questions that the knowledge base can and cannot answer. However, its decision to abstain is left to the answer-generation prompt, and the authors note that other ways of judging answerability deserve investigation. Its scope is also narrow: admissions for prospective students rather than the wider range of questions current students ask, such as fees, regulations and mitigating circumstances.
 
 \subsection{Evaluating RAG Systems} \label{sec:back_eval}
-% Es et al. 2024 (RAGAs); Zheng et al. 2023 (LLM as judge); Cormack et al. 2009 for hybrid retrieval.
 
-\subsection{Research Gap} \label{sec:back_gap}
-% End with the gap that leads to RQ1-RQ3.
+Evaluating a RAG system requires judging the retrieved passages and the generated answer, and doing so for many questions. RAGAs \cite{es2024ragas} proposes reference-free metrics computed with an LLM: faithfulness (whether the answer's claims are supported by the context), answer relevance and context relevance. LLM-based judging scales well, but \citet{zheng2023judging} show that LLM judges, while agreeing with human preferences at a level similar to agreement between humans, also have systematic biases, such as favouring the first answer shown, longer answers, or answers written by themselves. Automatic judgements must therefore be checked against human labels before they are trusted.
+
+Unanswerable questions need their own evaluation. \citet{peng2025unanswerability} propose UAEval4RAG, a framework that generates unanswerable questions for a given knowledge base from a taxonomy of six categories and measures how often a RAG system correctly declines. They find that the choice of RAG components, such as the retriever and the prompt, strongly affects this behaviour. Most evaluations of university chatbots, by contrast, use small test sets and report averages without testing whether differences between systems are statistically meaningful.
+
+\subsection{Summary and Research Gap} \label{sec:back_gap}
+
+The literature shows that RAG can ground answers in documents, that grounding does not remove hallucination, that knowing when not to answer is a separate and hard problem, and that evaluation must cover unanswerable questions and be checked against humans. Three gaps follow for university support:
+\begin{description}
+  \item[G1] There is little controlled comparison of the main approaches (an intent or FAQ baseline, a plain LLM and RAG) on the same institutional knowledge base and test set. This leads to RQ1.
+  \item[G2] Retrieval choices are usually fixed rather than measured on university documents, which mix web pages, policy PDFs and fee tables. This leads to RQ2.
+  \item[G3] In existing systems such as Marcel, abstention is left to the prompt. It is not treated as a separate component, evaluated with a risk--coverage analysis, and linked to escalation to staff. This leads to RQ3.
+\end{description}
+This project addresses these gaps with a controlled comparison of four systems on Heriot-Watt University Malaysia documents, a test set that includes unanswerable questions, and an analysis of why each system succeeds or fails rather than a single accuracy score.
 
 % Methodology
 %%%%%%%%%%%%%%%%%%%%
