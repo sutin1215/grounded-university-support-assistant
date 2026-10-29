@@ -144,19 +144,121 @@ This project addresses these gaps with a controlled comparison of four systems o
 % Methodology
 %%%%%%%%%%%%%%%%%%%%
 \section{Methodology} \label{cha:method}
-% TODO (Weeks 6-8): methods, requirements and research questions, linked to the aim and objectives.
+
+This section describes how the objectives in Section~\ref{sec:intro_aim} will be met: the overall approach, the knowledge base, the four systems, the requirements, the evaluation plan and the success criteria.
 
 \subsection{Research Approach} \label{sec:method_approach}
 
+The project combines building an artefact with a controlled experiment. The artefact is a university support assistant; the experiment compares four versions of it on the same knowledge base and the same questions, so that differences in the results can be traced to the design choice being tested. Development is iterative: each system is built, run on a development set of questions, and its failures are analysed before the next is built. The emphasis is on analysis rather than on reaching the highest possible score. Every experiment states the question it answers, fixes everything except the factor being tested, and is followed by an error analysis that explains why each system succeeds or fails. All settings are stored in configuration files and every run is logged, so that each result can be reproduced.
+
+\subsection{Knowledge Base} \label{sec:method_kb}
+
+The knowledge base is built from public documents on the Heriot-Watt University and Heriot-Watt University Malaysia websites: fee structures and payment guides, the coursework submission policy, the mitigating circumstances procedure, the assessment and progression rules and the academic regulations (O2). A source list records each document's version, scope and date of access (Section~\ref{sec:feas_docs}). The documents are converted to text, split into overlapping passages, and every passage keeps its document name, page and version so that answers can cite it. The knowledge base is frozen as a dated snapshot before the final evaluation. Some outdated versions are kept on purpose to test whether the systems prefer current documents.
+
 \subsection{The Four Systems} \label{sec:method_systems}
 
+Table~\ref{tab:systems} summarises the four systems (O3). S2, S3 and S4 use the same LLM (Gemini, accessed through its API) and the same answer prompt, so that the only difference between them is the retrieval and escalation they add.
+
+\begin{table}[h]
+\caption{The four systems compared in the project.}
+\label{tab:systems}
+\small
+\begin{tabular}{p{0.16\linewidth}p{0.36\linewidth}p{0.38\linewidth}}
+\toprule
+System & How it answers & What it tests \\
+\midrule
+S1 FAQ baseline & Matches the question to the closest of a fixed set of FAQ entries (TF-IDF similarity); escalates below a threshold. & The traditional intent-matching approach. \\
+S2 Plain LLM & The LLM answers from its own knowledge, with no documents. & What a general chatbot does without grounding. \\
+S3 RAG & Retrieves passages (best configuration from RQ2) and the LLM answers only from them, citing document and page. & The value of grounding (RQ1). \\
+S4 RAG + escalation & S3 plus a confidence check; below a threshold the question is escalated to staff instead of answered. & Whether escalation reduces wrong answers (RQ3). \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For S4, three groups of confidence signals will be compared: retrieval signals (the top retrieval score and the gap between the first and second passage), evidence signals (whether the retrieved passages agree) and a model signal (asking the LLM whether the passages contain enough information to answer). The escalation threshold is tuned on the development set only (O5).
+
 \subsection{Requirements} \label{sec:method_req}
-% MoSCoW table of functional and non-functional requirements.
+
+The requirements are prioritised with the MoSCoW method (Tables~\ref{tab:freq} and~\ref{tab:nfreq}). The Must requirements form the core needed to answer RQ1 to RQ3; Should and Could requirements are added if time allows.
+
+\begin{table}[h]
+\caption{Functional requirements.}
+\label{tab:freq}
+\small
+\begin{tabular}{p{0.07\linewidth}p{0.7\linewidth}p{0.13\linewidth}}
+\toprule
+ID & Description & Priority \\
+\midrule
+F1 & Ingest PDF and web documents into passages that keep document, page and version. & Must \\
+F2 & Answer a question with citations to the supporting document and page. & Must \\
+F3 & Escalate low-confidence questions with a message directing the student to the relevant office. & Must \\
+F4 & Run any of the four systems from configuration, without code changes. & Must \\
+F5 & Run the full evaluation automatically and log every question, answer, source and score. & Must \\
+F6 & Provide a web interface showing the answer, its sources and escalations. & Should \\
+F7 & Warn when an answer relies on an outdated document version. & Could \\
+F8 & Support a small usability study (subject to ethics approval). & Could \\
+F9 & Multi-turn conversation, access to personal student records, or integration with live university systems. & Won't \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\caption{Non-functional requirements.}
+\label{tab:nfreq}
+\small
+\begin{tabular}{p{0.07\linewidth}p{0.7\linewidth}p{0.13\linewidth}}
+\toprule
+ID & Description & Priority \\
+\midrule
+NF1 & No personal data is sent to the LLM; only public documents and test questions. & Must \\
+NF2 & Results are reproducible: fixed configurations, a frozen knowledge-base snapshot and logged runs. & Must \\
+NF3 & Runs on a standard laptop (CPU only), with generation through a hosted API. & Must \\
+NF4 & Median response time of 10 seconds or less per question. & Should \\
+NF5 & Total API cost for all experiments below RM100. & Should \\
+NF6 & Unit tests cover ingestion, retrieval and the baseline. & Should \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Evaluation Plan} \label{sec:method_eval}
-% Metrics, test set, development/test split, statistics.
+
+\textbf{Test set (O4).} About 200 questions written from the documents, covering fees and payment, deadlines and late submission, mitigating circumstances, assessment and progression, and regulations. They include direct factual questions, paraphrased questions that use different wording from the documents, questions that need two passages, questions affected by outdated versions, and about 40 questions that the documents cannot answer, written using the categories of \citet{peng2025unanswerability}. Each answerable question has a gold answer and the exact supporting quote; each unanswerable question is labelled as such. The set is split into a development set (about 60 questions), used for all tuning, and a test set (about 140 questions), used once for the final results.
+
+\textbf{Experiments.} Four experiments map to the research questions. E1 compares S1, S2 and S3 (RQ1). E2 varies one retrieval choice at a time on S3: lexical, dense or hybrid retrieval, chunk size and the number of passages (RQ2). E3 compares the confidence signals and thresholds of S4 (RQ3). E4 is the optional usability study (RQ4).
+
+\textbf{Metrics.} Table~\ref{tab:metrics} lists the metrics. Correctness and faithfulness are labelled by hand for a sample and by an LLM judge for the rest. Because LLM judges have known biases \cite{zheng2023judging}, the judge is only used if its agreement with my own labels on the development set is at least moderate (Cohen's $\kappa \geq 0.6$).
+
+\begin{table}[h]
+\caption{Evaluation metrics.}
+\label{tab:metrics}
+\small
+\begin{tabular}{p{0.24\linewidth}p{0.66\linewidth}}
+\toprule
+Metric & Definition \\
+\midrule
+Correctness & Answer matches the gold answer (correct, partly correct, wrong). \\
+Faithfulness & Every claim in the answer is supported by the retrieved passages. \\
+Citation accuracy & Cited document and page contain the supporting quote. \\
+Retrieval & Hit@$k$ and mean reciprocal rank of the gold passage. \\
+Escalation & Precision and recall of escalation on unanswerable questions; share of answerable questions wrongly escalated. \\
+Risk--coverage & Error rate on answered questions against the share answered, across thresholds. \\
+Cost and latency & API cost and response time per question. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Analysis.} Because all systems answer the same questions, comparisons are paired: McNemar's test for correct and wrong answers, the Wilcoxon signed-rank test for graded scores, and bootstrap 95\% confidence intervals for every headline number. Each failure is assigned to a category (retrieval miss, unsupported claim, wrong escalation, missed escalation, outdated source), so that the results explain why each system fails, not only how often.
 
 \subsection{Success Criteria} \label{sec:method_success}
+
+The criteria below are provisional and will be fixed in Week 8 using the pilot results for S2 and S3.
+\begin{description}
+  \item[SC1] S3 is significantly more correct than S1 and S2 on the answerable test questions (McNemar, $p < 0.05$).
+  \item[SC2] At least 85\% of S3's citations point to a passage that supports the answer.
+  \item[SC3] S4 at least halves the share of wrong answers compared with S3, while wrongly escalating no more than 20\% of answerable questions.
+  \item[SC4] The best retrieval configuration finds the gold passage in the top five for at least 90\% of answerable test questions.
+  \item[SC5] NF4 and NF5 are met: median response time of 10 seconds or less and total cost below RM100.
+\end{description}
 
 % Feasibility
 %%%%%%%%%%%%%%%%%%%%
