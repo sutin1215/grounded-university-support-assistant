@@ -1,0 +1,79 @@
+qid,system,judge_label,judge_reason
+Q01,S1,CORRECT,The chatbot accurately states all key facts from the reference answer without any contradictions or extra invented information.
+Q01,S2,WRONG,The chatbot states a penalty of 3% per working day instead of the official 30% deduction for work submitted up to 5 working days late.
+Q01,S3,CORRECT,The chatbot correctly states the main fact (a 30% mark deduction for up to 5 working days late) without any contradicting information.
+Q02,S1,CORRECT,The chatbot accurately states the outcome (awarded 0 F with no feedback unless mitigating circumstances are approved) for submitting coursework 7 working days late.
+Q02,S2,CORRECT,"The chatbot accurately answers that coursework submitted 7 working days late will not be marked and will receive a mark of zero, while correctly noting the exception for mitigating circumstances."
+Q02,S3,CORRECT,The chatbot accurately conveys that coursework submitted 7 working days late receives a mark of 0F with no feedback unless mitigating circumstances are approved.
+Q03,S1,WRONG,"The question is answerable from the official documents, but the chatbot declined to answer."
+Q03,S2,PARTIAL,"The chatbot correctly states that lecturers cannot directly grant informal extensions, but it misses the specific official exceptions (reasonable adjustments and class-wide extensions) and instead adds details about Mitigating Circumstances applications."
+Q03,S3,CORRECT,The chatbot accurately conveys all key facts from the reference answer without any contradictions.
+Q04,S1,WRONG,"The chatbot fails to answer the question about class tests and presentations, providing a general late penalty rule instead of stating that they are excluded."
+Q04,S2,CORRECT,"The chatbot correctly answers that late submission penalties do not apply to class tests and presentations, aligning with the reference answer."
+Q04,S3,CORRECT,"The chatbot correctly states that late penalties do not apply to presentations, online tests, and time-limited activities."
+Q05,S1,WRONG,"The question is answerable from the official documents, but the chatbot declined to answer it."
+Q05,S2,CORRECT,"The chatbot accurately states that a course leader can give a class-wide extension for valid, cohort-wide reasons, matching the core facts of the reference answer."
+Q05,S3,CORRECT,The chatbot correctly includes the key fact from the reference answer that class-wide extensions are allowed only in exceptional circumstances.
+Q06,S1,WRONG,The chatbot fails to state the required timeframe of ten working days and incorrectly claims that applications without evidence are not accepted at all.
+Q06,S2,CORRECT,The chatbot correctly identifies the 10 working days timeframe required by the reference answer without contradicting any facts.
+Q06,S3,CORRECT,The chatbot accurately states that the student has ten working days to provide the documentation and that the application will be closed if not provided within that timeframe.
+Q07,S1,CORRECT,The chatbot correctly states the key fact that self-certified mitigating circumstances can be for a period of no more than seven days.
+Q07,S2,WRONG,The chatbot incorrectly states that the self-certification period is up to 5 days instead of the 7 days specified in the reference answer.
+Q07,S3,CORRECT,"The chatbot accurately states the maximum period of seven days for self-certifying mitigating circumstances, fully matching the reference answer."
+Q08,S1,WRONG,The chatbot answer discusses the evidence requirements for an application instead of answering what outcomes a successful application can lead to.
+Q08,S2,PARTIAL,"The chatbot correctly identifies several key outcomes (uncapped resit, disregarding an attempt, board consideration), but misses specific outcomes mentioned in the reference answer such as grade mapping."
+Q08,S3,CORRECT,The chatbot accurately includes all the outcomes mentioned in the reference answer without any contradictions.
+Q09,S1,CORRECT,The chatbot accurately answers the question by stating that evidence (or a self-certification form for short periods) is required and that applications without sufficient evidence are not accepted.
+Q09,S2,PARTIAL,"The chatbot correctly states that claims without evidence are not accepted, but it misses the key detail that a self-certification form can be used for short periods."
+Q09,S3,CORRECT,"The chatbot correctly states that claims without sufficient evidence will not be accepted, and mentions the exception for self-certification during short periods."
+Q10,S1,CORRECT,The chatbot answer is an exact match to the reference answer.
+Q10,S2,PARTIAL,"The chatbot correctly includes Grade D as a passing grade, but adds an unreferenced distinction for postgraduate programmes (Grade C) that restricts the key fact."
+Q10,S3,CORRECT,The chatbot answer accurately states the key fact that a Grade D is the minimum required to pass a core course.
+Q11,S1,CORRECT,The chatbot answer directly and accurately states the key fact from the reference answer.
+Q11,S2,WRONG,"The chatbot incorrectly states that Grade D (or C) is the lowest grade for earning credit points, whereas the reference answer specifies Grade E."
+Q11,S3,CORRECT,"The chatbot accurately identifies Grade E as the minimum grade to gain credit points, fully answering the question according to the reference answer."
+Q12,S1,CORRECT,The chatbot answer correctly states all the key facts from the reference answer without any errors or missing information.
+Q12,S2,CORRECT,"The chatbot accurately answers the question by stating that students are permitted one resit opportunity per failed course, without contradicting the reference answer."
+Q12,S3,CORRECT,The chatbot accurately provides the key facts from the reference answer regarding the single re-assessment opportunity and the typical August diet timing.
+Q13,S1,WRONG,The chatbot declined to answer an answerable question.
+Q13,S2,CORRECT,"The chatbot directly and accurately states that no credits are awarded for an F grade, matching the reference answer."
+Q13,S3,CORRECT,"The chatbot answer correctly states that a Grade F does not carry any credits, perfectly matching the reference answer."
+Q14,S1,WRONG,"The question is answerable from the official documents, but the chatbot declined to provide the requested information."
+Q14,S2,WRONG,"The question is answerable from the official documents, but the chatbot declined to answer stating it did not know the fees for 2026/27."
+Q14,S3,CORRECT,The chatbot accurately provides the per-semester tuition fee both before and after the 6% SST calculation as stated in the reference answer.
+Q15,S1,WRONG,"The chatbot failed to answer the question about service tax for international students, instead providing unrelated information about payment deadlines."
+Q15,S2,WRONG,"The chatbot incorrectly states that international students are exempt from Malaysian Service Tax, directly contradicting the reference answer."
+Q15,S3,CORRECT,"The chatbot accurately states that non-Malaysian students pay a 6% service tax (SST), fully matching the reference answer."
+Q16,S1,WRONG,The chatbot answer explains how to pay instead of stating the registration fee amount requested in the question.
+Q16,S2,WRONG,The chatbot declines to answer a question that is answerable using the reference document.
+Q16,S3,CORRECT,The chatbot accurately provides the registration fee amount including SST (RM530) and correctly notes that it is non-refundable.
+Q17,S1,CORRECT,The chatbot answer correctly and fully states all key facts from the reference answer.
+Q17,S2,PARTIAL,"The chatbot correctly mentions that fees are typically due prior to the start of the semester, but incorrectly adds that they can be paid within the first week of classes."
+Q17,S3,CORRECT,The chatbot correctly states that fees are payable in advance and provides accurate details regarding payment timing before the semester begins.
+Q18,S1,WRONG,The chatbot answer provides irrelevant information about service tax for non-Malaysian students instead of answering whether tuition fees can be paid in instalments.
+Q18,S2,WRONG,The chatbot invents details about a per-semester payment plan and fails to state any of the specific requirements of the official Maybank credit card instalment option.
+Q18,S3,CORRECT,"The chatbot answer correctly states all key facts from the reference answer, including the card issuer, duration, interest rate, minimum amount, and administration fee."
+Q19,S1,WRONG,The chatbot explains when semester fees are due instead of providing the online payment methods asked for in the question.
+Q19,S2,CORRECT,"The chatbot correctly directs the student to pay online via the Heriot-Watt Online Payment Portal, which covers the key fact in the reference answer."
+Q19,S3,CORRECT,"The chatbot accurately provides the key payment locations (myHWU Apps and the specific website URL) from the reference answer, along with helpful details on completing the process."
+Q20,S1,WRONG,The chatbot explains payment methods instead of providing the requested contact email address for payment receipts.
+Q20,S2,WRONG,The chatbot provided an incorrect email address (myfinance@hw.ac.uk) instead of the official contact email specified in the reference answer (student-services-malaysia@hw.ac.uk).
+Q20,S3,CORRECT,"The chatbot correctly identifies student-services-malaysia@hw.ac.uk as the email contact for payment receipts, matching the key facts of the reference answer."
+U01,S1,DECLINED,The chatbot correctly declined to answer an unanswerable question and referred the user to staff.
+U01,S2,ANSWERED,"The question is unanswerable from the knowledge base, but the chatbot provided specific operating hours anyway."
+U01,S3,DECLINED,"The question is unanswerable from the knowledge base, and the chatbot correctly stated it could not find the information and referred the user to an office without inventing an answer."
+U02,S1,DECLINED,"The question is unanswerable from the provided documents, and the chatbot correctly declined to answer and referred the user to staff."
+U02,S2,ANSWERED,"The question cannot be answered from the provided documents, but the chatbot provided a specific policy answer anyway."
+U02,S3,DECLINED,The chatbot correctly recognizes that the information is not in the documents and directs the student to university staff without inventing an answer.
+U03,S1,ANSWERED,"The question cannot be answered from the documents, but the chatbot provided a specific statement about fee due dates rather than declining to answer."
+U03,S2,ANSWERED,The chatbot answered an unanswerable question by providing specific details not contained in the official documents.
+U03,S3,DECLINED,The chatbot correctly declined to answer an unanswerable question and referred the student to university staff.
+U04,S1,DECLINED,"The question is unanswerable based on the official documents, and the chatbot correctly declined to answer and referred the user to staff."
+U04,S2,ANSWERED,"The question cannot be answered from the official documents, but the chatbot provided a specific answer anyway with invented or unsupported details."
+U04,S3,DECLINED,"The question is unanswerable from the documents, and the chatbot correctly states it cannot find the information and refers the student to staff."
+U05,S1,DECLINED,"The question is unanswerable, and the chatbot correctly declined to answer and referred the user to the relevant office."
+U05,S2,DECLINED,"The question is unanswerable, and the chatbot correctly states it does not know the answer and directs the user to university contacts without making up information."
+U05,S3,DECLINED,"The question is unanswerable from the documents, and the chatbot correctly declined to answer and referred the user to staff."
+U06,S1,DECLINED,"The question is unanswerable from the knowledge base, and the chatbot correctly declined to answer and referred the user to staff without inventing details."
+U06,S2,ANSWERED,"The question cannot be answered from the official documents, but the chatbot provided a specific answer containing unsupported details instead of declining."
+U06,S3,DECLINED,The chatbot correctly declined to answer an unanswerable question and referred the student to university staff.
