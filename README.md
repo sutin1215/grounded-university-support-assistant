@@ -26,9 +26,17 @@ A Python chatbot for answering student questions from official university docume
 ```bash
 pip install -r requirements.txt
 # put the official PDFs listed in data/doc_sources.csv into data/raw/ (not committed)
-python -m src.ingest          # PDFs -> data/processed/chunks.jsonl
-python -m eval.locate_gold    # find the page of each gold answer
-python -m eval.run_pilot      # retrieval (BM25 vs TF-IDF) + S1 FAQ baseline -> eval/results/
-python -m src.retrieve "What is the penalty for late coursework?"   # demo with citations
+# put GEMINI_API_KEY=... in a .env file in this folder (not committed)
+python -m src.ingest              # PDFs -> page-tagged passages (data/processed/)
+python -m eval.locate_gold        # find the page of each gold answer quote
+python -m eval.run_pilot          # retrieval comparison (5 methods) + S1 baseline
+python -m eval.run_systems        # S1, S2, S3 answers for all pilot questions (cached)
+python -m eval.judge              # LLM judge labels
+python -m eval.score_systems      # results table: eval/results/pilot_systems_summary.md
+python -m eval.confidence_pilot   # S4 pilot: retrieval scores as an escalation signal
+python -m src.demo                # demo: S1 vs search with citations
+python -m src.systems S3 "How many times can I resit a course?"
 python -m pytest -q
 ```
+
+Gemini responses are cached in `data/cache/llm_cache.jsonl`, so rerunning gives identical results without new API calls.
