@@ -1,9 +1,10 @@
-# Pilot configuration (Week 7). Values are starting points, tuned later on the dev split.
+# Pilot configuration (Weeks 7-8). Values are starting points, tuned later on the dev split.
 raw_dir: data/raw
 chunks_path: data/processed/chunks.jsonl
 faq_path: data/faq.csv
 questions_path: eval/pilot_questions.csv
 results_dir: eval/results
+cache_path: data/cache/llm_cache.jsonl   # saved LLM responses, so reruns are free and reproducible
 
 chunking:
   words_per_chunk: 220   # roughly one or two paragraphs
@@ -11,8 +12,31 @@ chunking:
 
 retrieval:
   top_k: 5
-  methods: [bm25, tfidf]
+  # Methods compared in the retrieval pilot (RQ2):
+  #   bm25       keyword search
+  #   bm25_stem  keyword search with word stemming ("extensions" matches "extension")
+  #   tfidf      TF-IDF cosine similarity
+  #   dense      embedding search (meaning, not exact words)
+  #   hybrid     reciprocal rank fusion of bm25_stem and dense
+  methods: [bm25, bm25_stem, tfidf, dense, hybrid]
+  dense_model: BAAI/bge-small-en-v1.5   # small English embedding model, runs on a laptop CPU
+  rrf_k: 60                              # reciprocal rank fusion constant (Cormack et al. 2009)
+  s3_method: hybrid                      # retriever used by S3
 
 faq_baseline:
   # S1 answers only when the best FAQ match is at least this similar; otherwise it escalates.
   min_similarity: 0.35
+
+llm:
+  provider: gemini
+  model: gemini-3.6-flash      # pinned version, not a "latest" alias, so results are reproducible
+  temperature: 0.0             # most deterministic output
+  max_output_tokens: 1024
+  # USD per 1M tokens, Gemini API paid tier, ai.google.dev/gemini-api/docs/pricing (checked 1 Nov 2026).
+  # Output price includes thinking tokens. The pilot ran on the paid tier (inputs not used for training).
+  price_input_per_m: 0.75
+  price_output_per_m: 3.75
+  requests_per_minute: 30      # paid tier (billing enabled 1 Nov 2026)
+
+judge:
+  model: gemini-3.6-flash
