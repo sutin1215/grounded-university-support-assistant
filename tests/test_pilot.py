@@ -41,3 +41,56 @@ def test_faq_baseline_answers_and_escalates():
     bot = FAQBaseline(faq, min_similarity=0.3)
     assert bot.answer("when are my semester fees due")["faq_id"] == "F1"
     assert bot.answer("Where is the campus gym?")["faq_id"] == ESCALATE
+
+
+def test_stemmed_tokenizer_matches_plural():
+    from src.retrieve import tokenize_stem
+    assert tokenize_stem("extensions") == tokenize_stem("extension")
+
+
+def test_stemmed_bm25_finds_plural_wording():
+    from src.retrieve import StemmedBM25Retriever
+    chunks = CHUNKS + [{"chunk_id": "d", "doc": "ltbp.pdf", "page": 1, "text": "No individual extensions are permitted."}]
+    top = StemmedBM25Retriever(chunks).search("Can I get an extension?", k=1)[0]
+    assert top["doc"] == "ltbp.pdf"
+
+
+def test_hybrid_rrf_rewards_agreement():
+    from src.retrieve import HybridRetriever
+
+    class Fixed:
+        def __init__(self, scores):
+            self._s = scores
+
+        def scores(self, q):
+            return self._s
+
+    cfg = {"retrieval": {"rrf_k": 60}}
+    # chunk "b" is ranked 1st by one part and 2nd by the other; "a" and "c" are each last once
+    h = HybridRetriever(CHUNKS, cfg, parts=[Fixed([1, 3, 2]), Fixed([2, 3, 1])])
+    assert h.search("x", k=1)[0]["chunk_id"] == "b"
+
+
+def test_s3_citation_parsing_and_abstain():
+    from src.systems import S3RAG
+
+    class FakeLLM:
+        def __init__(self, text):
+            self.text = text
+
+        def generate(self, prompt, system=""):
+            from src.llm import LLMResult
+            return LLMResult(self.text, "fake", 10, 5, 0.1, 0.0, False)
+
+    class FakeRetriever:
+        def search(self, q, k):
+            return [dict(c, score=1.0) for c in CHUNKS[:2]]
+
+    prompts = {"s3_user": "{passages}\n{question}", "s3_system": "", "abstain_message": "Please contact staff."}
+    s3 = S3RAG.__new__(S3RAG)
+    s3.llm, s3.prompts, s3.k, s3.retriever = FakeLLM("Late work loses 30% [1]. See [9]."), prompts, 2, FakeRetriever()
+    out = s3.answer("late penalty?")
+    assert [c["doc"] for c in out["citations"]] == ["policy.pdf"] and out["abstained"] is False
+    s3.llm = FakeLLM("NOT_FOUND")
+    out = s3.answer("library hours?")
+    assert out["abstained"] is True and out["answer"] == "Please contact staff."
