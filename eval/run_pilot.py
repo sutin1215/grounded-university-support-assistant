@@ -1,4 +1,4 @@
-"""Pilot evaluation: retrieval quality (BM25 vs TF-IDF) and the S1 FAQ baseline.
+"""Pilot evaluation: retrieval quality (all methods in the config) and the S1 FAQ baseline.
 
 Reads eval/pilot_questions.csv and writes:
   eval/results/pilot_per_question.csv  (one row per question and method)
@@ -49,7 +49,7 @@ def main():
     rows, summary = [], {}
 
     for method in cfg["retrieval"]["methods"]:
-        retriever = build(method, chunks)
+        retriever = build(method, chunks, cfg)
         h1 = hk = dk = rr = 0.0
         for q in answerable:
             hits = retriever.search(q["question"], k)
