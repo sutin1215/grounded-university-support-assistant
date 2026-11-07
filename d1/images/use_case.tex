@@ -1,0 +1,41 @@
+% Use case diagram (Figure: use cases). TikZ, so it can be edited in Overleaf.
+% Needs \usepackage{tikz} with the arrows.meta, positioning, fit, backgrounds and shapes.geometric libraries.
+\begin{tikzpicture}[font=\sffamily\small,
+  uc/.style={ellipse,draw=blue!50!black,fill=blue!6,minimum width=3.6cm,minimum height=0.95cm,align=center,inner sep=1pt},
+  dep/.style={-{Stealth[length=2mm]},dashed},
+  lab/.style={font=\sffamily\scriptsize,fill=white,inner sep=1pt}]
+  % stick figure: \actor{name}{x,y}{label}
+  \newcommand{\actor}[3]{%
+    \begin{scope}[shift={(#2)}]
+      \draw (0,0.55) circle (0.17); \draw (0,0.38)--(0,-0.1); \draw (-0.3,0.22)--(0.3,0.22);
+      \draw (0,-0.1)--(-0.22,-0.5); \draw (0,-0.1)--(0.22,-0.5);
+      \node[align=center,below] at (0,-0.5) {#3};
+      \coordinate (#1) at (0,0.1);
+    \end{scope}}
+  \draw[rounded corners,gray] (1.6,-5.65) rectangle (11.4,2.95);
+  \node[font=\sffamily\bfseries] at (6.45,2.65) {Student Support Assistant};
+  % student side
+  \node[uc] (ask) at (4,1.6) {Ask a question};
+  \node[uc] (view) at (4,-1.5) {View answer\\with citations};
+  \node[uc] (open) at (4,-3.6) {Open cited\\document page};
+  \node[uc] (ref) at (4,0.0) {Be referred to\\Student Services};
+  % system and staff side
+  \node[uc] (gen) at (9.0,1.6) {Retrieve passages and\\generate answer};
+  \node[uc] (esc) at (9.0,0.1) {View escalated\\questions};
+  \node[uc] (res) at (9.0,-1.5) {Resolve an\\escalation};
+  \node[uc] (upd) at (9.0,-2.75) {Update document\\snapshot};
+  \node[uc] (cfg) at (9.0,-3.85) {Configure system\\and thresholds};
+  \node[uc] (run) at (9.0,-4.95) {Run evaluation};
+  \actor{stu}{0,-0.5}{Student}
+  \actor{llm}{13,1.4}{Gemini API\\(external)}
+  \actor{stf}{13,-0.9}{Student Services\\staff}
+  \actor{mnt}{13,-4.0}{Maintainer\\(developer)}
+  \draw (stu)--(ask.west); \draw (stu)--(view.west); \draw (stu)--(ref.west);
+  \draw (gen.east)--(llm);
+  \draw (esc.east)--(stf); \draw (res.east)--(stf);
+  \draw (upd.east)--(mnt); \draw (cfg.east)--(mnt); \draw (run.east)--(mnt);
+  \draw[dep] (ask)--node[lab]{\guillemotleft include\guillemotright}(gen);
+  \draw[dep] (open)--node[lab]{\guillemotleft extend\guillemotright}(view);
+  \draw[dep] (ref)--node[lab]{\guillemotleft extend\guillemotright\ (weak evidence)}(ask);
+  \draw[dep] (res)--node[lab]{\guillemotleft include\guillemotright}(esc);
+\end{tikzpicture}

@@ -28,7 +28,8 @@ NF1 to NF6, with success criteria SC1 to SC5. All of these are defined in `d1/ma
 
 - `src/`: `config.py` (loads `configs/pilot.yaml`, resolves paths from repo root), `ingest.py` (PDF to page-tagged
   chunks), `retrieve.py` (bm25, bm25_stem, tfidf, dense, hybrid RRF), `llm.py` (Gemini client with cache, cost and
-  retry), `systems.py` (S1 to S3 behind `answer(question) -> dict`), `faq_baseline.py`, `demo.py` (supervisor demo)
+  retry), `systems.py` (S1 to S3 behind `answer(question) -> dict`), `faq_baseline.py`, `demo.py` (supervisor demo),
+  `app.py` (Streamlit web interface: student and staff views), `escalations.py` (escalation log, `data/escalations.jsonl`, gitignored)
 - `eval/`: pilot harness. `pilot_questions.csv` (26 questions: 20 answerable, 6 unanswerable, each with gold answer, doc, quote and page),
   `labels/pilot_manual_labels.csv`, `results/` (generated tables, committed)
 - `configs/`: `pilot.yaml` (all settings) and `prompts.yaml` (all prompts, reported verbatim in the dissertation)
@@ -52,6 +53,7 @@ Use the project venv: `.venv/Scripts/python.exe` (Windows). Run modules from the
 .venv/Scripts/python.exe -m eval.run_systems           # S1-S3 answers (LLM, cached)
 .venv/Scripts/python.exe -m eval.judge                 # LLM judge labels
 .venv/Scripts/python.exe -m eval.score_systems         # eval/results/pilot_systems_summary.md
+.venv/Scripts/python.exe -m streamlit run src/app.py   # web interface prototype (cached questions cost nothing)
 .venv/Scripts/python.exe -m eval.confidence_pilot      # S4 signal pilot (AUROC)
 .venv/Scripts/python.exe -m src.systems S3 "question"  # one answer
 .venv/Scripts/python.exe tools/build_journal.py docs/journal/journal_NN_week_X.md
@@ -91,13 +93,16 @@ Order matters: ingest, then locate_gold, then run_pilot or run_systems, then jud
 
 ## Status (update as work moves on)
 
-As of 3 Nov 2026 (Week 8):
+As of 7 Nov 2026 (Week 8):
 - Done: ingestion (5 PDFs, 45 chunks), 5 retrievers (hybrid best: hit@5 0.95, MRR 0.79), S1 to S3 pilot
   (correct on 20 answerable: S1 8, S2 6, S3 20; unanswerable declined: S1 5/6, S2 1/6, S3 6/6), LLM judge
-  (kappa 0.89 vs manual), S4 signal pilot (dense top score AUROC 0.88). D1 Sections 1 to 3 drafted.
-- Next: D1 Feasibility, Gantt, risks, PLES and GenAI summary; full D1 draft to supervisor **Fri 6 Nov**; D1 deadline
-  26 Nov (aim to submit 24 Nov). Then: S4, the 200-question test set, web UI (F6), E1 to E3 at scale.
-- Supervisor meetings: Tuesdays 11:30. Notes go in `docs/meetings/`, weekly journal in `docs/journal/`.
+  (kappa 0.89 vs draft labels), S4 signal pilot (dense top score AUROC 0.88), Streamlit UI prototype on S3 (F6).
+  D1 restructured after meeting 5 and fully drafted (main body 14 pages, 51 references): Introduction, Background
+  (comparison and technology tables), Methodology (agile, plan, design: architecture, use case, UI), Feasibility,
+  Conclusions, appendices (Gantt, risks, PLES, requirements, GenAI, ethics forms).
+- Next: student review of the full draft; full D1 draft to supervisor **Wed 11 Nov**; meeting **Fri 13 Nov**;
+  D1 deadline 26 Nov (aim 24 Nov); D2 video script. Then: 200-question test set, S4, E1 to E3 at scale.
+- Supervisor meetings: usually Tuesdays 11:30 (meeting 6 moved to Fri 13 Nov). Notes go in `docs/meetings/`, weekly journal in `docs/journal/`.
 
 ## Known issues
 

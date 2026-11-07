@@ -1,0 +1,9 @@
+# Streamlit settings for the prototype web interface (src/app.py).
+[client]
+toolbarMode = "viewer"   # hide developer menus such as "Deploy"
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+primaryColor = "#1f5f8b"

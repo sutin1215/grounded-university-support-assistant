@@ -3,6 +3,9 @@
 % make ACM settings and load extra packages
 \input{hwu_template/acm_settings}
 \input{hwu_template/packages}
+\usepackage{tikz} % architecture and use case diagrams
+\usepackage{pgfgantt} % Gantt charts in the appendix
+\usepackage{pdfpages} % ethics forms in the appendix
 
 % document details
 % replace those with your details
@@ -21,6 +24,9 @@
 
 % load extra formatting
 \input{hwu_template/format}
+\raggedbottom % avoid stretched gaps between paragraphs
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds,shapes.geometric} % diagrams in images/*.tex
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}} % left-aligned table column, no stretched gaps
 
 \begin{document}
 
@@ -41,7 +47,7 @@ Acknowledgements text.
 
 % Abstract
 \abstract{
-University students often struggle to find accurate answers about fees, deadlines and regulations that are spread across web pages, PDFs and emails, and general-purpose chatbots can answer such questions confidently yet incorrectly. This project designs, implements and evaluates a university support assistant that uses retrieval-augmented generation (RAG) to answer only from official university documents, cites its sources, and escalates to staff when its confidence is low. Four systems will be compared on the same knowledge base and a purpose-built test set of about 200 student questions: an FAQ-matching baseline, a plain large language model, RAG with citations, and RAG with confidence-based escalation. The evaluation will measure answer correctness, hallucination, citation accuracy, retrieval quality, escalation precision and recall, latency and cost, using paired statistical tests, and may include a small usability study subject to ethics approval. This report presents the motivation, related work, methodology and feasibility work that show the project can be completed in Semester 2.
+University students often struggle to find accurate answers about fees, deadlines and regulations that are spread across web pages, PDFs and emails, and general-purpose chatbots can answer such questions confidently yet incorrectly. This project designs, implements and evaluates a university support assistant that uses retrieval-augmented generation (RAG) to answer only from official university documents, cites its sources, and escalates to staff when its confidence is low. Four systems will be compared on the same knowledge base and a purpose-built test set of about 200 student questions: an FAQ-matching baseline, a plain large language model, RAG with citations, and RAG with confidence-based escalation. The evaluation will measure correctness, hallucination, citation accuracy, retrieval quality, escalation quality, latency and cost with paired statistical tests, and may include a usability study subject to ethics approval. In a pilot on 26 questions, the RAG system answered all 20 answerable questions correctly with citations and declined all 6 unanswerable ones, while the plain LLM was fully correct on only 6; a working web prototype and a cost estimate well within budget show that the project can be completed in Semester 2.
 }
 
 \input{hwu_template/contents}
@@ -51,230 +57,326 @@ University students often struggle to find accurate answers about fees, deadline
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \pagenumbering{arabic}
+\setcounter{table}{0} % the declaration form uses a longtable, which counts as a table
 
 % Introduction
 %%%%%%%%%%%%%%%%%%%%
 \section{Introduction} \label{cha:intro}
 
-Students need timely and accurate answers about admissions, course registration, assessment deadlines, fees, financial aid and academic regulations. At Heriot-Watt University Malaysia this information is spread across web pages, PDF policies and emails, so students must search several places and staff answer many repetitive queries. Large language models (LLMs) can answer such questions fluently, but they can also produce confident statements that no source supports, a problem known as hallucination \cite{ji2023survey}. For university-specific facts such as a fee, a deadline or a late-submission penalty, an unsupported answer can cause real harm. This project designs, implements and evaluates a university support assistant that answers only from official documents, shows its sources, and hands the question to staff when it is not confident.
+\subsection{Project Overview} \label{sec:intro_overview}
 
-\subsection{Background and Motivation} \label{sec:intro_motiv}
+Chatbots are widely used in education to give students quick answers and to support staff \cite{okonkwo2021chatbots, labadze2023role}. Large language models (LLMs) make them far more fluent, but they can also state things that no source supports, a problem known as hallucination \cite{ji2023survey}. Retrieval-augmented generation (RAG) reduces this risk by answering from passages retrieved from trusted documents, so that each answer can be traced to its source \cite{lewis2020rag, gao2023rag}, and recent work on abstention studies when a system should decline to answer instead \cite{wen2025know, peng2025unanswerability}.
 
-Retrieval-augmented generation (RAG) \cite{lewis2020rag} addresses part of this problem. It retrieves relevant passages from a document collection and gives them to an LLM as context, so that answers can be grounded in, and traced back to, those passages. Surveys describe how RAG has grown into a family of designs for retrieval, generation and augmentation \cite{gao2023rag}. RAG alone does not guarantee a correct answer: retrieval can miss the relevant passage, and a generator may still answer from its own knowledge when the retrieved text is insufficient. A complementary line of work studies abstention, where a system declines to answer when it should not \cite{wen2025know}. Evaluating this behaviour needs questions that the knowledge base cannot answer, in addition to answerable ones \cite{peng2025unanswerability}.
+This project builds and evaluates a student support assistant for Heriot-Watt University Malaysia (HWUM) that answers only from official university documents, cites the document and page behind each answer, and passes the question to staff when it is not confident. It compares this assistant with three simpler alternatives on the same documents and questions.
 
-University chatbots built on RAG already exist. Marcel, for example, answers admission questions from scraped university web pages, hides its sources when it abstains, and evaluates retrieval and generation on questions that are answerable and unanswerable from its knowledge base \cite{trienes2025marcel}. Earlier admissions chatbots used intent-based dialogue management instead \cite{nguyen2021neu}. In Marcel the decision to abstain is left to the answer-generation prompt, and the authors suggest that other ways of judging answerability are worth investigating \cite{trienes2025marcel}. This project builds on that observation. Rather than only building another chatbot, it treats the decision to answer or escalate as a measurable component, and compares it against simpler alternatives on a test set specific to the university.
+\subsection{Problem Statement} \label{sec:intro_problem}
+
+HWUM students need accurate answers to practical questions about fees, coursework deadlines, late submission and mitigating circumstances, but the answers are spread across many official sources. An audit for this project found 23 official web pages and PDFs on just five topics, published by at least five university offices and mixing rules for all Heriot-Watt campuses with Malaysia-only rules; six outdated versions were still online (Section~\ref{sec:feas_docs}). Students must search several places, risk reading an old version, or wait for staff to reply.
+
+General-purpose chatbots are not a safe shortcut, because they answer from their training data rather than from HWUM's current documents. In this project's pilot, a plain LLM answered only 6 of 20 HWUM questions fully correctly and answered 5 of 6 questions that it should have declined (Section~\ref{sec:feas_pilot}). For a fee, a deadline or a penalty, a confident wrong answer can cost a student money or marks. The problem is therefore how to give HWUM students quick answers that are grounded in current official documents, show where they come from, and are passed to staff when the evidence is weak.
 
 \subsection{Aim and Objectives} \label{sec:intro_aim}
 
-The aim is to design, implement and rigorously evaluate a grounded, source-citing, escalation-aware chatbot for university student support, and to quantify its benefits and limits against simpler alternatives. The objectives are:
+The aim is to design, implement and evaluate a grounded, source-citing assistant for HWUM student support that escalates to staff when it is not confident. The objectives are:
 
 \begin{description}
-  \item[O1] Review the literature on educational chatbots, RAG, hallucination and abstention, and identify the gap this project addresses.
-  \item[O2] Build a versioned knowledge base from public university documents.
-  \item[O3] Implement four comparable systems: an FAQ-matching baseline, a plain LLM, RAG with citations, and RAG with confidence-based escalation.
-  \item[O4] Build a labelled test set of about 200 student questions across topics and difficulty types, including questions that cannot be answered from the documents.
-  \item[O5] Implement a confidence-based escalation mechanism and tune its threshold on a development split.
-  \item[O6] Evaluate the systems on correctness, faithfulness, retrieval quality, escalation quality, latency and cost, using paired statistical tests.
-  \item[O7] Deliver a web interface for demonstration and, if ethics approval is granted, a small usability study.
-  \item[O8] Reflect critically on limitations, threats to validity and ethical issues.
+  \item[O1] To review existing work on student support chatbots, RAG, hallucination and abstention, and identify the gap this project addresses.
+  \item[O2] To build a versioned knowledge base from official Heriot-Watt and HWUM documents, and a labelled test set that includes questions the documents cannot answer.
+  \item[O3] To design and implement four comparable systems:
+  \begin{itemize}
+    \item S1, an FAQ-matching baseline;
+    \item S2, a plain LLM that answers from its own knowledge;
+    \item S3, a RAG system that answers only from retrieved passages and cites them;
+    \item S4, the RAG system with a confidence check that escalates uncertain questions to staff.
+  \end{itemize}
+  \item[O4] To evaluate and compare the systems on correctness, faithfulness, retrieval quality, escalation quality, latency and cost.
+  \item[O5] To develop a web interface that shows answers with their sources, and to evaluate its usability with students, subject to ethics approval.
 \end{description}
 
-The project investigates four research questions:
+The main problems to solve are keeping answers within the retrieved evidence, deciding when that evidence is too weak to answer, and measuring both fairly, including on questions that should not be answered.
 
-\begin{description}
-  \item[RQ1] How much more accurate and faithful is RAG than an FAQ-matching baseline and a plain LLM on university-specific questions?
-  \item[RQ2] Which retrieval design choices (chunking, number of retrieved passages, dense, lexical or hybrid retrieval) matter most?
-  \item[RQ3] Does confidence-based escalation reduce incorrect answers, and what fraction of answerable questions does it wrongly escalate?
-  \item[RQ4] (optional, subject to ethics approval) Do students find the assistant usable and trustworthy compared with searching the university website?
-\end{description}
+\subsection{Scope and Limitations} \label{sec:intro_scope}
 
-Meeting these objectives means solving four problems: turning heterogeneous web pages and PDFs into a clean, versioned knowledge base; generating answers that stay within the retrieved evidence and cite it; deciding when the evidence is too weak to answer; and measuring all of this fairly, including on questions that should not be answered.
+The project covers questions from HWUM students about fees and payment, coursework deadlines and late submission, mitigating circumstances, assessment and progression, and academic regulations. Answers come only from public, official Heriot-Watt and HWUM documents in English, frozen as a dated snapshot, and the assistant either gives a general factual answer with citations or escalates to Student Services. Out of scope are sensitive or personal matters (such as mental health, personal financial hardship, medical issues, appeals and disciplinary cases), advice on an individual student's case, personal data and student records, acting on the student's behalf, other universities and campuses, languages other than English, training or fine-tuning a model, and live deployment.
+
+The main limitations are that answers are only as current as the document snapshot, only one LLM family (Gemini) is evaluated, the test questions are written by the author rather than by students, and escalation is simulated rather than connected to a real staff inbox.
 
 \subsection{Organisation} \label{sec:intro_orga}
 
-Section~\ref{cha:back} reviews related work on RAG, hallucination, abstention, university chatbots and the evaluation of RAG systems. The following sections set out the methodology and requirements, and the feasibility work carried out so far, including the pilot study, and then conclude. The back matter contains the references, the project management plan (Gantt chart, risk analysis and professional, legal, ethical and social issues), a summary of generative AI use, and the appendices.
+Section~\ref{cha:back} reviews related work and ends with the research gap and questions. Section~\ref{cha:method} sets out the method, plan, requirements and design, Section~\ref{cha:feas} reports the feasibility work, and Section~\ref{cha:concl} concludes. Project management, PLES, generative AI use and study materials are in the appendices.
 
 
 % Background Research
 %%%%%%%%%%%%%%%%%%%%
 \section{Background Research} \label{cha:back}
 
-This section reviews the work that the project builds on. It covers retrieval-augmented generation and the retrieval methods behind it, hallucination, abstention, existing university support chatbots, and how such systems are evaluated. It ends by naming the gaps that lead to the research questions in Section~\ref{sec:intro_aim}.
+This section reviews the literature that the project builds on (Section~\ref{sec:back_lit}), compares existing student support chatbots (Section~\ref{sec:back_chat}), reviews the technologies available to build the assistant (Section~\ref{sec:back_tech}), and ends with the research gap and the research questions that follow from it (Section~\ref{sec:back_gap}).
 
-\subsection{Retrieval-Augmented Generation} \label{sec:back_rag}
+\subsection{Literature Review} \label{sec:back_lit}
 
-\citet{lewis2020rag} introduced retrieval-augmented generation (RAG), which combines a pre-trained sequence-to-sequence model (its \emph{parametric} memory) with a dense vector index of Wikipedia that a neural retriever searches at query time (its \emph{non-parametric} memory). Generating from retrieved passages set new results on open-domain question answering and produced more specific and factual text than a model using only its parameters. Two properties of this design matter for a university assistant. First, the knowledge can be updated by replacing the document index rather than retraining the model, which suits policies and fee tables that change every year. Second, each answer can be traced back to the passages it was generated from, which makes citation possible.
+\subsubsection{Retrieval-Augmented Generation and Retrieval} \label{sec:back_rag}
 
-Since then RAG has grown into a family of designs. \citet{gao2023rag} group them into \emph{naive} RAG (retrieve, then generate), \emph{advanced} RAG (adding steps such as query rewriting and re-ranking) and \emph{modular} RAG (flexible pipelines built from interchangeable parts). The survey also shows that most of the design decisions, such as how documents are split into chunks, how many passages are retrieved and which retriever is used, have no single best setting and must be chosen for the task. This motivates RQ2: rather than assuming a configuration, this project measures which choices matter on university documents.
+\citet{lewis2020rag} introduced retrieval-augmented generation (RAG), which combines a pre-trained generator (its \emph{parametric} memory) with a document index that a retriever searches at query time (its \emph{non-parametric} memory). Generating from retrieved passages gave more specific and factual answers than a model using only its parameters. Two properties matter for a university assistant: the knowledge can be updated by replacing the index rather than retraining the model, which suits fee tables and policies that change every year, and each answer can be traced to the passages behind it, which makes citation possible.
 
-The retriever itself can be lexical or dense. Lexical retrievers such as BM25 \cite{robertson2009bm25} score passages by the query words they contain, giving more weight to rare terms. They are fast, need no training and handle exact terms well, such as course codes, amounts and policy names, but they fail when the question and the document use different words. Dense retrievers encode questions and passages as vectors, either with a model trained for retrieval such as DPR \cite{karpukhin2020dpr} or with general sentence embeddings such as Sentence-BERT \cite{reimers2019sbert}, so that passages with the same meaning but different wording can still be matched. They can, however, miss rare exact terms. The two can be combined with reciprocal rank fusion \cite{cormack2009reciprocal}, which merges ranked lists using only the rank of each item and was shown to outperform more complex fusion methods. The pilot in Section~\ref{sec:feas_pilot} already shows the lexical weakness: a question about an ``extension'' failed to match a policy that only mentions ``extensions''. This is the reason for comparing lexical, dense and hybrid retrieval in RQ2.
+RAG has since grown into a family of designs. Surveys group them into \emph{naive} RAG (retrieve, then generate), \emph{advanced} RAG (adding steps such as query rewriting and re-ranking) and \emph{modular} RAG \cite{gao2023rag, fan2024ragsurvey}, and show that choices such as chunk size, the number of passages and the retriever have no single best setting. More context is not automatically better: \citet{liu2024lost} found that LLMs use information at the start or end of a long context much better than information in the middle, so retrieving more passages can hide the relevant one. These choices must therefore be measured for the task, which motivates RQ2.
 
-\subsection{Hallucination and Grounding} \label{sec:back_halluc}
+Retrievers are either lexical or dense. Lexical retrievers such as BM25 \cite{robertson2009bm25} score passages by the query words they contain, weighting rare terms more. They need no training and handle exact terms such as course codes and policy names well, but fail when the question and the document use different words. Dense retrievers encode questions and passages as vectors, using a model trained for retrieval such as DPR \cite{karpukhin2020dpr} or sentence embeddings such as Sentence-BERT \cite{reimers2019sbert} and BGE \cite{xiao2024cpack}, so that paraphrases still match. Dense retrieval is not always better, however: on the 18 datasets of the BEIR benchmark, BM25 was a robust baseline in zero-shot settings, while dense models were efficient but often underperformed other approaches \cite{thakur2021beir}. The two can be combined with reciprocal rank fusion \cite{cormack2009reciprocal}, which merges ranked lists using only ranks and needs no score calibration. Because university documents mix exact terms with everyday paraphrases, this project compares lexical, dense and hybrid retrieval rather than assuming one.
 
-\citet{ji2023survey} define hallucination as generated content that is nonsensical or unfaithful to the provided source. They distinguish \emph{intrinsic} hallucination, which contradicts the source, from \emph{extrinsic} hallucination, which cannot be verified from it. Both matter here. An intrinsic error might state the wrong late-submission penalty; an extrinsic one might invent a refund rule that no document mentions. Retrieval reduces hallucination by giving the model the relevant text, but it does not remove it. If the retriever misses the right passage, the model may answer from its training data instead, which for a specific university is often outdated or simply wrong. For this reason the project measures faithfulness (whether each claim is supported by the retrieved passages) and citation accuracy separately from correctness, and treats an answer without support as a failure even if it happens to be true.
+\subsubsection{Hallucination, Grounding and Citation} \label{sec:back_halluc}
 
-\subsection{Abstention and Confidence} \label{sec:back_abst}
+\citet{ji2023survey} define hallucination as generated content that is nonsensical or unfaithful to the source, and distinguish \emph{intrinsic} hallucination, which contradicts the source, from \emph{extrinsic} hallucination, which cannot be verified from it. For LLMs, \citet{huang2025hallucination} separate \emph{factuality} errors (wrong about the world) from \emph{faithfulness} errors (not following the given context), and note that retrieval reduces but does not remove either. An intrinsic error here might state the wrong late-submission penalty; an extrinsic one might invent a refund rule that no document mentions. \citet{chen2024rgb} tested LLMs on four abilities that RAG needs and found \emph{negative rejection}, declining when the retrieved passages do not contain the answer, among the hardest: models often answered anyway. This is exactly the behaviour that matters for HWUM questions the documents cannot answer.
 
-A system that answers every question will eventually answer one it should not. \citet{wen2025know} survey \emph{abstention}, the ability of a language model to decline to answer, and analyse it from three perspectives: the query (for example, questions that are ambiguous or have no answer), the model (whether it has the knowledge and how confident it is) and human values (whether an answer would be harmful). They review methods across the model life cycle, from training to inference, and treat reliable abstention as an open problem at every stage. For a support assistant, abstaining is not enough on its own: the student still needs an answer, so the assistant should \emph{escalate} the question to staff.
+Citations make answers checkable, but they are not reliable by default. In an audit of commercial generative search engines, only about half of the generated sentences were fully supported by their citations \cite{liu2023verifiability}, and on the ALCE benchmark even the best models lacked complete citation support about half of the time on one dataset \cite{gao2023alce}. This project therefore measures faithfulness and citation accuracy separately from correctness, and treats an unsupported answer as a failure even if it happens to be true.
 
-Deciding when to escalate is a form of selective prediction, where a system may reject inputs on which it is likely to be wrong \cite{geifman2017selective}. The quality of such a system is described by a risk--coverage trade-off: answering fewer questions (lower coverage) should lower the error rate on the questions it does answer (lower risk). This framing gives the project a way to evaluate escalation as a measurable component, by plotting risk against coverage for different confidence thresholds rather than reporting a single accuracy figure. Possible confidence signals in RAG include the retrieval scores, the agreement between retrieved passages, and the model's own estimate of whether the passages support an answer; RQ3 tests whether such signals reduce incorrect answers without escalating too many answerable questions.
+\subsubsection{Abstention, Confidence and Escalation} \label{sec:back_abst}
 
-\subsection{University Support Chatbots} \label{sec:back_chat}
+A system that answers every question will eventually answer one it should not. SQuAD~2.0 showed that reading-comprehension models that score well on answerable questions perform much worse once unanswerable questions are added \cite{rajpurkar2018squad2}. \citet{wen2025know} survey \emph{abstention} in LLMs from three perspectives (the query, the model and human values) and treat reliable abstention as an open problem. For a support assistant, abstaining is not enough on its own: the student still needs an answer, so the question should be \emph{escalated} to staff.
 
-Chatbots for student support predate large language models. Early systems such as the NEU-chatbot for university admissions \cite{nguyen2021neu} used intent classification: each user question is mapped to one of a fixed set of intents, and a prepared answer is returned. This approach is predictable and cheap, but it only covers the questions its designers anticipated, and it can return a confident but wrong answer when a new question resembles an existing intent. The FAQ baseline (S1) in this project represents this approach. The pilot confirms its weakness: asked about a late-payment charge, it returned the answer for the fee due date.
+Deciding when to escalate is a form of selective prediction, where a system rejects inputs on which it is likely to be wrong and is evaluated by a risk--coverage trade-off: answering fewer questions should lower the error rate on those it answers \cite{geifman2017selective}. The confidence signal is the hard part. \citet{kamath2020selective} found that a model's own probabilities are overconfident on out-of-domain questions; a separate calibrator answered 56\% of questions at 80\% accuracy, against 48\% using the probabilities. LLMs can partly predict whether they know an answer, but this calibration weakens on new tasks \cite{kadavath2022know}. \citet{feng2024abstain} compare calibration-, training-, prompting- and consistency-based abstention and propose having several LLMs check each other, while semantic entropy \cite{farquhar2024semantic} detects confabulation by sampling several answers and measuring how much their meanings differ. Both need several LLM calls per question, which multiplies cost and latency.
 
-More recent systems use LLMs. JayBot \cite{odede2024jaybot} is an LLM-based chatbot for students and admissions evaluated with users. Marcel \cite{trienes2025marcel} is the closest work to this project: a lightweight, open-source RAG assistant that answers prospective students' admission questions from university web pages, and adds a retriever that maps questions to curated FAQ entries so that staff can steer its answers. Marcel was evaluated on retrieval and generation using questions that the knowledge base can and cannot answer. However, its decision to abstain is left to the answer-generation prompt, and the authors note that other ways of judging answerability deserve investigation. Its scope is also narrow: admissions for prospective students rather than the wider range of questions current students ask, such as fees, regulations and mitigating circumstances.
+Inside RAG, Self-RAG \cite{asai2024selfrag} trains the model to judge whether retrieval is needed and whether passages support its output, which requires fine-tuning, and CRAG \cite{yan2024crag} uses a lightweight evaluator of retrieval quality whose confidence decides whether to keep the passages or search the web instead. CRAG shows that a retrieval-based signal can drive the decision, but falling back to the open web would bring unofficial sources back into a university assistant. Escalating to a person is studied as \emph{learning to defer} \cite{mozannar2020defer}, where a system learns when to pass a decision to a human expert. S4 applies a simple, threshold-based version of this idea, with Student Services as the expert. It compares cheap retrieval and evidence signals, which need no extra LLM call, with one model-based check, because the multi-call methods above would break the cost and latency targets (NF4, NF5) and a trained calibrator needs more labelled data than the project has.
 
-\subsection{Evaluating RAG Systems} \label{sec:back_eval}
+\subsubsection{Evaluating RAG Systems} \label{sec:back_eval}
 
-Evaluating a RAG system requires judging the retrieved passages and the generated answer, and doing so for many questions. RAGAs \cite{es2024ragas} proposes reference-free metrics computed with an LLM: faithfulness (whether the answer's claims are supported by the context), answer relevance and context relevance. LLM-based judging scales well, but \citet{zheng2023judging} show that LLM judges, while agreeing with human preferences at a level similar to agreement between humans, also have systematic biases, such as favouring the first answer shown, longer answers, or answers written by themselves. Automatic judgements must therefore be checked against human labels before they are trusted.
+Evaluating RAG means judging both the retrieved passages and the answer for many questions. RAGAs \cite{es2024ragas} uses an LLM to score faithfulness, answer relevance and context relevance without reference answers, and ARES \cite{saadfalcon2024ares} trains lightweight judges from a small set of human labels. LLM judges scale well, but \citet{zheng2023judging} show that, although they agree with humans about as often as humans agree with each other, they favour the first answer shown, longer answers and their own outputs. This project therefore uses an LLM judge only after checking its agreement with human labels using Cohen's kappa \cite{cohen1960kappa}.
 
-Unanswerable questions need their own evaluation. \citet{peng2025unanswerability} propose UAEval4RAG, a framework that generates unanswerable questions for a given knowledge base from a taxonomy of six categories and measures how often a RAG system correctly declines. They find that the choice of RAG components, such as the retriever and the prompt, strongly affects this behaviour. Most evaluations of university chatbots, by contrast, use small test sets and report averages without testing whether differences between systems are statistically meaningful.
+Unanswerable questions need their own evaluation. UAEval4RAG \cite{peng2025unanswerability} generates unanswerable questions for a knowledge base from six categories and shows that the retriever and prompt strongly affect how often a RAG system correctly declines. Most university chatbot studies, by contrast, use small author-written test sets of answerable questions and report averages without testing whether differences are statistically meaningful (Section~\ref{sec:back_chat}).
 
-\subsection{Summary and Research Gap} \label{sec:back_gap}
+\subsection{Existing Student Support Chatbots} \label{sec:back_chat}
 
-The literature shows that RAG can ground answers in documents, that grounding does not remove hallucination, that knowing when not to answer is a separate and hard problem, and that evaluation must cover unanswerable questions and be checked against humans. Three gaps follow for university support:
+A systematic review of 36 educational chatbots found that most followed predetermined conversation paths and that few were evaluated rigorously \cite{kuhail2023interacting}. Student support chatbots have moved from intent classification to LLMs with retrieval. Table~\ref{tab:chatbots} compares the most relevant systems.
+
+\begin{table}[tbp]
+\caption{Comparison of existing student support chatbots with this project.}
+\label{tab:chatbots}
+\footnotesize
+\begin{tabular}{L{0.15\linewidth}L{0.22\linewidth}L{0.29\linewidth}L{0.26\linewidth}}
+\toprule
+System & Setting and approach & Key points & Limitation for this project \\
+\midrule
+NEU-chatbot \cite{nguyen2021neu} & Admissions, Vietnam; intent classification with fixed answers & Predictable and cheap; covers only anticipated questions & Can return a confident wrong answer for an unseen question \\
+Walert \cite{cherumanal2024walert} & RMIT university information; intent-based vs RAG (BM25/DPR, open LLM) & 106 questions; intent system caught about 80\% of out-of-scope questions while RAG answered most of them; fewer passages gave better answers & Compares only two systems; no confidence signal or escalation \\
+JayBot \cite{odede2024jaybot} & Students and admissions; LLM chatbot with retrieval & User study comparing the chatbot with human live chat & No evaluation of unanswerable questions \\
+BarkPlug \cite{neupane2024barkplug} & Mississippi State; GPT-3.5 RAG over 42 pages & RAGAS 0.96 on author-written questions; SUS 67.75 from 50 students & Hallucination noted as a limitation; no abstention or escalation \\
+Chen et al. \cite{chen2024admission} & Admissions at three universities; GPT-3.5 with LlamaIndex RAG & Accuracy rose from 41.4\% (LLM alone) to 89.5\% with RAG; 53 testers & Admissions only; no handling of questions the documents cannot answer \\
+URAG \cite{nguyen2025urag} & Admissions, HCMUT; FAQ tier, then documents, then LLM fallback & 500 questions; 0.628 accuracy vs 0.544 for GPT-4o & Falls back to the LLM's own knowledge instead of declining or escalating \\
+Khasanova and Suh \cite{khasanova2025rag} & International admissions, Korea; RAG with several retrievers and LLMs & Compares retrieval, chunking and LLMs with RAGAS (best averages about 0.74) & Prompt allows answers from loosely related context; unanswerable questions not evaluated \\
+Marcel \cite{trienes2025marcel} & Prospective students, Marburg; RAG plus an FAQ retriever & 95 test questions (19 unanswerable); 9-week deployment with 92 users & Abstention left to the answer prompt; no sources shown when it declines \\
+\midrule
+\textbf{This project} & HWUM current students; four systems (FAQ, plain LLM, RAG, RAG with escalation) & Same documents and questions for all systems; unanswerable and outdated-version questions; page-level citations & Measures escalation as a separate component, with risk--coverage analysis \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Three patterns stand out. First, most systems serve admissions and prospective students, whose questions differ from current students' questions about fees, deadlines, penalties and mitigating circumstances. Second, most are evaluated on answerable, author-written questions and report high averages: BarkPlug's RAGAS score of 0.96 says nothing about what happens when the answer is not in the documents. Only Walert and Marcel test questions outside the knowledge base, and Walert's result is a warning: the intent-based system rejected most out-of-scope questions, while RAG answered them, which is why a simple baseline (S1) belongs in the comparison. Third, when the answer is missing, systems either fall back to the LLM's own knowledge (URAG) or leave the decision to the prompt (Marcel, Khasanova and Suh). Marcel comes closest to this project, and its authors note that a dedicated answerability check deserves study. None of the systems treats escalation to staff as a separate component with its own evaluation.
+
+This project differs in three ways: it serves current students at HWUM rather than applicants; it compares four systems in a controlled way on the same documents and questions, including unanswerable and outdated-version questions; and it treats the decision to answer or escalate as a component that is measured with escalation precision and recall and a risk--coverage curve.
+
+\subsection{Technology Review} \label{sec:back_tech}
+
+Table~\ref{tab:tech} compares the options for each component and the choice made. Section~\ref{sec:feas_pilot} gives the pilot evidence behind these choices.
+
+\begin{table}[tbp]
+\caption{Technology options considered; the chosen option is in bold.}
+\label{tab:tech}
+\footnotesize
+\begin{tabular}{L{0.14\linewidth}L{0.33\linewidth}L{0.45\linewidth}}
+\toprule
+Component & Options & Reason for the choice \\
+\midrule
+LLM & \textbf{Gemini 3.6 Flash (API)}; other hosted APIs; local open model such as Llama~3 8B \cite{grattafiori2024llama3} & Low cost (US\$0.75 and US\$3.75 per million input and output tokens \cite{google2026pricing}); paid-tier inputs are not used for training. A local model is free but slow on a CPU-only laptop (NF3, NF4). \\
+Lexical retrieval & TF-IDF; BM25; \textbf{BM25 with stemming} & Stemming lets ``extension'' match ``extensions''; best lexical method in the pilot. \\
+Dense retrieval & \textbf{bge-small-en-v1.5} \cite{xiao2024cpack}; larger embedding models; hosted embedding APIs & Small enough to embed the whole knowledge base on a laptop CPU; no API cost. \\
+Combination & Weighted score sum; \textbf{reciprocal rank fusion} \cite{cormack2009reciprocal} & Uses ranks only, so BM25 and cosine scores need no rescaling or weight tuning. \\
+Index & FAISS or a vector database; \textbf{in-memory NumPy} & The knowledge base has hundreds of passages, so exact search in memory is fast enough and adds no dependency. \\
+Pipeline & LangChain or LlamaIndex; \textbf{plain Python} & Frameworks speed up prototypes but hide prompts and defaults; plain Python keeps every setting in configuration (F4) and every prompt reportable. \\
+Interface & Flask with HTML; Gradio \cite{abid2019gradio}; \textbf{Streamlit} \cite{streamlit2026chat} & Pure Python with built-in chat elements and multiple pages for a staff view; Flask needs a separate front end. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Summary, Research Gap and Research Questions} \label{sec:back_gap}
+
+The literature shows that RAG can ground answers in documents, that grounding and citation do not remove hallucination, that knowing when not to answer is a separate and hard problem, and that evaluation must include unanswerable questions and be checked against humans. Three gaps follow for university support:
 \begin{description}
-  \item[G1] There is little controlled comparison of the main approaches (an intent or FAQ baseline, a plain LLM and RAG) on the same institutional knowledge base and test set. This leads to RQ1.
-  \item[G2] Retrieval choices are usually fixed rather than measured on university documents, which mix web pages, policy PDFs and fee tables. This leads to RQ2.
-  \item[G3] In existing systems such as Marcel, abstention is left to the prompt. It is not treated as a separate component, evaluated with a risk--coverage analysis, and linked to escalation to staff. This leads to RQ3.
+  \item[G1] There is little controlled comparison of the main approaches (an FAQ or intent baseline, a plain LLM and RAG) on the same institutional documents and test set; Walert compares only two, and the other systems in Table~\ref{tab:chatbots} evaluate one.
+  \item[G2] Retrieval choices are usually fixed rather than measured on university documents, which mix policy PDFs, fee tables and web pages.
+  \item[G3] Abstention is left to the prompt or replaced by a fallback to the LLM or the web. It is not treated as a separate component, linked to escalation to staff, and evaluated with a risk--coverage analysis.
 \end{description}
-This project addresses these gaps with a controlled comparison of four systems on Heriot-Watt University Malaysia documents, a test set that includes unanswerable questions, and an analysis of why each system succeeds or fails rather than a single accuracy score.
+These gaps lead to four research questions:
+\begin{description}
+  \item[RQ1] How much more accurate and faithful is RAG than an FAQ-matching baseline and a plain LLM on HWUM-specific questions? (G1)
+  \item[RQ2] Which retrieval design choices (chunk size, number of retrieved passages, and lexical, dense or hybrid retrieval) matter most? (G2)
+  \item[RQ3] Does confidence-based escalation reduce incorrect answers, and what share of answerable questions does it wrongly escalate? (G3)
+  \item[RQ4] (optional, subject to ethics approval) Do students find the assistant usable and trustworthy?
+\end{description}
 
 % Methodology
 %%%%%%%%%%%%%%%%%%%%
 \section{Methodology} \label{cha:method}
 
-This section describes how the objectives in Section~\ref{sec:intro_aim} will be met: the overall approach, the knowledge base, the four systems, the requirements, the evaluation plan and the success criteria.
+This section explains how the objectives (Section~\ref{sec:intro_aim}) and research questions (Section~\ref{sec:back_gap}) will be addressed: the development approach and plan, the knowledge base and systems, the requirements, the design, the evaluation plan and the success criteria.
 
-\subsection{Research Approach} \label{sec:method_approach}
+\subsection{Research and Development Approach} \label{sec:method_approach}
 
-The project combines building an artefact with a controlled experiment. The artefact is a university support assistant; the experiment compares four versions of it on the same knowledge base and the same questions, so that differences in the results can be traced to the design choice being tested. Development is iterative: each system is built, run on a development set of questions, and its failures are analysed before the next is built. The emphasis is on analysis rather than on reaching the highest possible score. Every experiment states the question it answers, fixes everything except the factor being tested, and is followed by an error analysis that explains why each system succeeds or fails. All settings are stored in configuration files and every run is logged, so that each result can be reproduced.
+The project combines building an artefact with a controlled experiment: four versions of a support assistant answer the same questions from the same knowledge base, so differences in the results can be traced to the design choice being tested. Each experiment keeps everything fixed except one factor and is followed by an error analysis that explains why each system succeeds or fails. Settings are kept in configuration files and every LLM response is cached, so results can be reproduced at no extra cost (NF2).
 
-\subsection{Knowledge Base} \label{sec:method_kb}
+Development follows an iterative, agile approach adapted from Scrum \cite{schwaber2020scrum} for a single developer. One-week sprints end at the weekly supervisor meeting, which acts as the sprint review; feedback is recorded in meeting notes and the next tasks are taken from a backlog on a Notion board. Team practices such as daily stand-ups are not used. Each sprint that changes a system ends with a run on the development questions and an error analysis, so the next decision rests on evidence; in the pilot this showed that hybrid retrieval worked best and that text extraction had misread a fee table (Section~\ref{sec:feas_pilot}). A waterfall plan was rejected because the retrieval settings and the design of S4 depend on results that cannot be known in advance. Code is versioned on GitHub with unit tests (NF6), and a weekly journal records decisions.
 
-The knowledge base is built from public documents on the Heriot-Watt University and Heriot-Watt University Malaysia websites: fee structures and payment guides, the coursework submission policy, the mitigating circumstances procedure, the assessment and progression rules and the academic regulations (O2). A source list records each document's version, scope and date of access (Section~\ref{sec:feas_docs}). The documents are converted to text, split into overlapping passages, and every passage keeps its document name, page and version so that answers can cite it. The knowledge base is frozen as a dated snapshot before the final evaluation. Some outdated versions are kept on purpose to test whether the systems prefer current documents.
+\subsection{Development Plan} \label{sec:method_plan}
 
-\subsection{The Four Systems} \label{sec:method_systems}
+Table~\ref{tab:plan} divides the work into five stages; the Gantt chart in Appendix~\ref{sec:app_gantt} gives the weekly schedule.
 
-Table~\ref{tab:systems} summarises the four systems (O3). S2, S3 and S4 use the same LLM (Gemini, accessed through its API) and the same answer prompt, so that the only difference between them is the retrieval and escalation they add.
-
-\begin{table}[h]
-\caption{The four systems compared in the project.}
-\label{tab:systems}
-\small
-\begin{tabular}{p{0.16\linewidth}p{0.36\linewidth}p{0.38\linewidth}}
+\begin{table}[tbp]
+\caption{Development plan. S1 and S2 denote Semesters 1 and 2; W denotes the teaching week.}
+\label{tab:plan}
+\footnotesize
+\begin{tabular}{L{0.2\linewidth}L{0.15\linewidth}L{0.42\linewidth}L{0.15\linewidth}}
 \toprule
-System & How it answers & What it tests \\
+Stage & When & Main tasks & Depends on \\
 \midrule
-S1 FAQ baseline & Matches the question to the closest of a fixed set of FAQ entries (TF-IDF similarity); escalates below a threshold. & The traditional intent-matching approach. \\
-S2 Plain LLM & The LLM answers from its own knowledge, with no documents. & What a general chatbot does without grounding. \\
-S3 RAG & Retrieves passages (best configuration from RQ2) and the LLM answers only from them, citing document and page. & The value of grounding (RQ1). \\
-S4 RAG + escalation & S3 plus a confidence check; below a threshold the question is escalated to staff instead of answered. & Whether escalation reduces wrong answers (RQ3). \\
+1. Preparation (done) & S1 W1--11 & Literature, document audit, ethics, pilots, interface prototype & -- \\
+2. Data & Break--S2 W2 & Full knowledge base; label about 200 questions; dev/test split & Source list \\
+3. Retrieval and S4 & S2 W2--5 & E2 and S4 tuning on the development set & Stage 2 \\
+4. Final evaluation & S2 W5--8 & One test-set run for E1--E3; finish interface; E4 & Stage 3; ethics (E4) \\
+5. Analysis and writing & S2 W6--11 & Statistics, error analysis, D3 (due Week 11) & Stage 4 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-For S4, three groups of confidence signals will be compared: retrieval signals (the top retrieval score and the gap between the first and second passage), evidence signals (whether the retrieved passages agree) and a model signal (asking the LLM whether the passages contain enough information to answer). The escalation threshold is tuned on the development set only (O5).
+Weeks 9--10 of Semester 2 are kept as slack before the D3 deadline, and if ethics approval is delayed the usability study (a Could requirement) is dropped without affecting RQ1 to RQ3. Risks are analysed in Appendix~\ref{sec:app_risk}.
+
+\subsection{Knowledge Base and the Four Systems} \label{sec:method_systems}
+
+The knowledge base is built from public Heriot-Watt and HWUM documents on fees and payment, coursework submission, mitigating circumstances, and assessment and progression (O2). A source list records each document's version, scope and access date (Section~\ref{sec:feas_docs}), and the knowledge base is frozen as a dated snapshot before the final evaluation. Some outdated versions are kept on purpose, to test whether the systems prefer current documents.
+
+The four systems (O3) share one pipeline (Section~\ref{sec:design_arch}). S1 matches the question to the closest of a fixed set of FAQ entries using TF-IDF similarity and escalates below a threshold, representing the traditional matching approach. S2 is a plain LLM that answers from its own knowledge. S3 retrieves passages and answers only from them with citations, or declines. S4 adds a confidence check that escalates instead of answering; it will compare \emph{retrieval} signals (the top score and the gap to the second passage), \emph{evidence} signals (whether the passages agree) and a \emph{model} signal (asking the LLM whether the passages are enough), with the threshold tuned on the development set only. S2, S3 and S4 use the same LLM and role prompt, so they differ only in the retrieval and escalation steps they add.
 
 \subsection{Requirements} \label{sec:method_req}
 
-The requirements are prioritised with the MoSCoW method (Tables~\ref{tab:freq} and~\ref{tab:nfreq}). The Must requirements form the core needed to answer RQ1 to RQ3; Should and Could requirements are added if time allows.
+The requirements are prioritised with MoSCoW and linked to the objectives in Appendix~\ref{sec:app_req}. The \emph{Must} requirements are the core needed for RQ1 to RQ3: ingest documents into passages that keep document, page and version (F1); answer with page-level citations (F2); escalate low-confidence questions (F3); run any system from configuration (F4); evaluate automatically with full logging (F5); send no personal data to the LLM (NF1); keep results reproducible (NF2); and run on a CPU-only laptop (NF3). The \emph{Should} requirements are the web interface (F6), a median response time of 10 seconds or less (NF4), a total API cost below RM100 (NF5) and unit tests (NF6). Warnings about outdated documents (F7) and the usability study (F8) are \emph{Could}; multi-turn chat, personal records and live university systems (F9) are \emph{Won't}.
 
-\begin{table}[h]
-\caption{Functional requirements.}
-\label{tab:freq}
-\small
-\begin{tabular}{p{0.07\linewidth}p{0.7\linewidth}p{0.13\linewidth}}
-\toprule
-ID & Description & Priority \\
-\midrule
-F1 & Ingest PDF and web documents into passages that keep document, page and version. & Must \\
-F2 & Answer a question with citations to the supporting document and page. & Must \\
-F3 & Escalate low-confidence questions with a message directing the student to the relevant office. & Must \\
-F4 & Run any of the four systems from configuration, without code changes. & Must \\
-F5 & Run the full evaluation automatically and log every question, answer, source and score. & Must \\
-F6 & Provide a web interface showing the answer, its sources and escalations. & Should \\
-F7 & Warn when an answer relies on an outdated document version. & Could \\
-F8 & Support a small usability study (subject to ethics approval). & Could \\
-F9 & Multi-turn conversation, access to personal student records, or integration with live university systems. & Won't \\
-\bottomrule
-\end{tabular}
-\end{table}
+\subsection{Design} \label{sec:method_design}
 
-\begin{table}[h]
-\caption{Non-functional requirements.}
-\label{tab:nfreq}
-\small
-\begin{tabular}{p{0.07\linewidth}p{0.7\linewidth}p{0.13\linewidth}}
-\toprule
-ID & Description & Priority \\
-\midrule
-NF1 & No personal data is sent to the LLM; only public documents and test questions. & Must \\
-NF2 & Results are reproducible: fixed configurations, a frozen knowledge-base snapshot and logged runs. & Must \\
-NF3 & Runs on a standard laptop (CPU only), with generation through a hosted API. & Must \\
-NF4 & Median response time of 10 seconds or less per question. & Should \\
-NF5 & Total API cost for all experiments below RM100. & Should \\
-NF6 & Unit tests cover ingestion, retrieval and the baseline. & Should \\
-\bottomrule
-\end{tabular}
-\end{table}
+\subsubsection{Architecture} \label{sec:design_arch}
+
+Figure~\ref{fig:arch} shows the architecture. An \emph{offline} pipeline, run when the documents change, splits each document into passages of about 220 words that keep their document, page and version, and builds the lexical index and embeddings. The \emph{online} pipeline handles one question at a time: the hybrid retriever returns the top-$k$ passages, the generator answers from those numbered passages only, and in S4 a confidence check decides whether to answer or escalate. The other systems are the same pipeline with parts removed, and every system returns the same output (answer, citations, whether it declined, tokens, latency and cost), so the evaluation harness treats them identically.
+
+Three design decisions follow from the literature. The model must cite numbered passages as [n], so each citation maps to a document and page that can be checked automatically \cite{gao2023alce}. It must reply with a fixed token (NOT\_FOUND) when the passages do not answer the question, so declines are detected without parsing free text. Prompts and settings live in configuration files, so they are reported exactly and kept identical across systems (F4).
+
+\begin{figure}[tbp]
+\centering
+\resizebox{\linewidth}{!}{\input{images/architecture}}
+\caption{System architecture. S3 stops after the answer generator, S2 skips retrieval, and S1 replaces retrieval and generation with FAQ matching.}
+\label{fig:arch}
+\end{figure}
+
+\subsubsection{Use Cases} \label{sec:design_usecase}
+
+Figure~\ref{fig:usecase} shows the use cases. A \emph{student} asks a question, views the answer and its citations, and is referred to Student Services when the evidence is too weak. \emph{Staff} view and resolve escalated questions. The \emph{maintainer} updates the document snapshot, configures the system and runs the evaluation. The Gemini API is an external actor.
+
+\begin{figure}[tbp]
+\centering
+\resizebox{0.66\linewidth}{!}{\input{images/use_case}}
+\caption{Use case diagram.}
+\label{fig:usecase}
+\end{figure}
+
+\subsubsection{User Interface} \label{sec:design_ui}
+
+A working prototype of the interface was built with Streamlit and connected to S3 (Figure~\ref{fig:ui}). The student view asks students not to type personal details, because questions go to an external API (NF1). Each answer marks its claims with citation numbers and lists the cited documents with their version and a link to the exact PDF page, so students can check the answer themselves. When S3 declines, the interface says the documents do not cover the question and gives an escalation reference instead of a dead end; unlike Marcel \cite{trienes2025marcel}, the student is always given a next step. The staff view lists escalated questions, storing only the question text, and lets staff resolve them with a note. A sidebar switches between S1, S2 and S3 for demonstrations; in Semester 2, S4's confidence check will replace S3's built-in decline.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{images/ui_prototype.png}
+\caption{Working interface prototype connected to S3: (a) an answer with page-level citations, (b) a question the documents do not cover, passed to Student Services, and (c) the staff view of escalated questions.}
+\label{fig:ui}
+\end{figure}
 
 \subsection{Evaluation Plan} \label{sec:method_eval}
 
-\textbf{Test set (O4).} About 200 questions written from the documents, covering fees and payment, deadlines and late submission, mitigating circumstances, assessment and progression, and regulations. They include direct factual questions, paraphrased questions that use different wording from the documents, questions that need two passages, questions affected by outdated versions, and about 40 questions that the documents cannot answer, written using the categories of \citet{peng2025unanswerability}. Each answerable question has a gold answer and the exact supporting quote; each unanswerable question is labelled as such. The set is split into a development set (about 60 questions), used for all tuning, and a test set (about 140 questions), used once for the final results.
+\textbf{Test set (O2).} About 200 questions written from the documents: direct questions, paraphrases, questions needing two passages, questions affected by outdated versions, and about 40 that the documents cannot answer, written using the categories of \citet{peng2025unanswerability}. Each answerable question has a gold answer and supporting quote. About 60 questions form a development set used for all tuning; the other 140 form a test set used once.
 
-\textbf{Experiments.} Four experiments map to the research questions. E1 compares S1, S2 and S3 (RQ1). E2 varies one retrieval choice at a time on S3: lexical, dense or hybrid retrieval, chunk size and the number of passages (RQ2). E3 compares the confidence signals and thresholds of S4 (RQ3). E4 is the optional usability study (RQ4).
+\textbf{Experiments.} E1 compares S1, S2 and S3 (RQ1). E2 varies one retrieval choice at a time in S3: lexical, dense or hybrid retrieval, chunk size and the number of passages (RQ2). E3 compares the confidence signals and thresholds of S4 (RQ3). E4, the optional usability study (RQ4), runs in Semester 2 only after ethics approval: in one-to-one Teams sessions, about 10 to 15 HWUM students try 5 to 8 prepared questions, rate each answer and complete the System Usability Scale \cite{brooke1996sus} and trust items (forms in Appendices~\ref{sec:app_forms} and~\ref{sec:app_questionnaire}).
 
-\textbf{Metrics.} Table~\ref{tab:metrics} lists the metrics. Correctness and faithfulness are labelled by hand for a sample and by an LLM judge for the rest. Because LLM judges have known biases \cite{zheng2023judging}, the judge is only used if its agreement with my own labels on the development set is at least moderate (Cohen's $\kappa \geq 0.6$).
+\textbf{Metrics.} Correctness (correct, partial, wrong), faithfulness (every claim supported by the passages), citation accuracy (the cited page contains the supporting quote), hit@$k$ and mean reciprocal rank, escalation precision and recall, the share of answerable questions wrongly escalated, the risk--coverage curve, latency and cost. Answers are labelled by hand on the development set and by an LLM judge on the rest; because LLM judges have known biases \cite{zheng2023judging}, the judge is used only if its agreement with my labels reaches Cohen's $\kappa \geq 0.6$.
 
-\begin{table}[h]
-\caption{Evaluation metrics.}
-\label{tab:metrics}
-\small
-\begin{tabular}{p{0.24\linewidth}p{0.66\linewidth}}
-\toprule
-Metric & Definition \\
-\midrule
-Correctness & Answer matches the gold answer (correct, partly correct, wrong). \\
-Faithfulness & Every claim in the answer is supported by the retrieved passages. \\
-Citation accuracy & Cited document and page contain the supporting quote. \\
-Retrieval & Hit@$k$ and mean reciprocal rank of the gold passage. \\
-Escalation & Precision and recall of escalation on unanswerable questions; share of answerable questions wrongly escalated. \\
-Risk--coverage & Error rate on answered questions against the share answered, across thresholds. \\
-Cost and latency & API cost and response time per question. \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\textbf{Analysis.} Because all systems answer the same questions, comparisons are paired: McNemar's test for correct and wrong answers, the Wilcoxon signed-rank test for graded scores, and bootstrap 95\% confidence intervals for every headline number. Each failure is assigned to a category (retrieval miss, unsupported claim, wrong escalation, missed escalation, outdated source), so that the results explain why each system fails, not only how often.
+\textbf{Analysis.} All systems answer the same questions, so comparisons are paired: McNemar's test for correct and wrong answers, the Wilcoxon signed-rank test for graded scores, and bootstrap 95\% confidence intervals, following \citet{dror2018hitchhiker}. Each failure is given a category (retrieval miss, unsupported claim, wrong or missed escalation, outdated source), so the results explain why systems fail, not only how often.
 
 \subsection{Success Criteria} \label{sec:method_success}
 
-The criteria below are provisional and will be fixed in Week 8 using the pilot results for S2 and S3.
+The criteria were set in Week 8 from the pilot and the literature, and are measured on the test set.
 \begin{description}
-  \item[SC1] S3 is significantly more correct than S1 and S2 on the answerable test questions (McNemar, $p < 0.05$).
-  \item[SC2] At least 85\% of S3's citations point to a passage that supports the answer.
-  \item[SC3] S4 at least halves the share of wrong answers compared with S3, while wrongly escalating no more than 20\% of answerable questions.
-  \item[SC4] The best retrieval configuration finds the gold passage in the top five for at least 90\% of answerable test questions.
-  \item[SC5] NF4 and NF5 are met: median response time of 10 seconds or less and total cost below RM100.
+  \item[SC1] S3 is significantly more often correct than S1 and S2 on answerable questions (McNemar, $p < 0.05$), testing whether the large pilot gap holds on a harder set.
+  \item[SC2] At least 85\% of S3's citations point to a passage that supports the answer. Open-domain systems reach about half \cite{liu2023verifiability, gao2023alce}; a small, closed knowledge base should do better, and the pilot reached 17 of 20.
+  \item[SC3] S4 at least halves the share of wrong answers compared with S3, while wrongly escalating no more than 20\% of answerable questions: an escalation costs staff time, but a wrong answer about a fee or penalty can cost a student money or marks.
+  \item[SC4] The best retrieval configuration finds the gold passage in the top five for at least 90\% of answerable questions, since the generator cannot cite evidence it is not given.
+  \item[SC5] NF4 and NF5 are met: a median response time of 10 seconds or less and a total cost below RM100.
 \end{description}
 
 % Feasibility
 %%%%%%%%%%%%%%%%%%%%
 \section{Feasibility} \label{cha:feas}
-% TODO (Weeks 5-8): design, evaluation strategy and preliminary work (pilot, document sources, tool tests).
 
-\subsection{Document Sources} \label{sec:feas_docs}
+The project rests on four assumptions: the official documents can be collected and cited at page level; retrieval finds the right passages; grounded generation answers correctly, cites and declines within the cost and time limits; and a cheap signal can separate answerable from unanswerable questions. Preliminary work in Weeks 4 to 8 tested each one, using a pilot of 26 questions (20 answerable, 6 unanswerable) written from five documents. With so few questions, all pilot numbers are indicative, not final results.
+
+\subsection{Document Sources and Ingestion} \label{sec:feas_docs}
+
+An audit in Weeks 4 and 5 found 27 sources on fees, deadlines and late submission, mitigating circumstances, assessment and financial aid. Of these, 23 are official documents from at least five university offices: 12 apply to all Heriot-Watt campuses and 9 only to Malaysia, and 6 are outdated versions that are still online, which are kept for staleness tests. Three agent websites and another university's page were excluded as unofficial. Five PDFs were ingested into 45 passages tagged with document and page. Checking the gold answers showed that text extraction had misread a fee table; rendering the page gave the correct fee (RM24,200 per semester), so tables will be checked visually before the test set is fixed.
 
 \subsection{Pilot Study} \label{sec:feas_pilot}
 
-\subsection{Tools and Technology Choices} \label{sec:feas_tools}
+\textbf{Retrieval.} Table~\ref{tab:pilot_ret} compares the five retrievers on the 20 answerable questions. Hybrid retrieval was best (hit@5 0.95, MRR 0.79). The lexical and dense methods failed on different questions (dense search missed two gold passages that BM25 found, and BM25 missed one that dense search ranked first), so combining them helped, consistent with BEIR \cite{thakur2021beir}. Stemming improved BM25's MRR from 0.69 to 0.74. S3 therefore uses hybrid retrieval with five passages.
+
+\begin{table}[tbp]
+\caption{Retrieval pilot on 20 answerable questions (top five passages).}
+\label{tab:pilot_ret}
+\footnotesize
+\begin{tabular}{lccc}
+\toprule
+Method & Hit@1 & Hit@5 & MRR \\
+\midrule
+TF-IDF & 0.45 & 0.85 & 0.61 \\
+BM25 & 0.60 & 0.90 & 0.69 \\
+BM25 with stemming & 0.60 & 0.95 & 0.74 \\
+Dense (bge-small) & 0.60 & 0.85 & 0.71 \\
+\textbf{Hybrid (RRF)} & \textbf{0.70} & \textbf{0.95} & \textbf{0.79} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Systems.} Table~\ref{tab:pilot_sys} compares S1 to S3. S3 answered all 20 answerable questions correctly, cited a source every time (17 of 20 on the gold page) and declined all 6 unanswerable questions. S2 was fully correct on only 6 and answered 5 of the 6 questions it should have declined, for example stating a monthly late-payment charge that none of the pilot documents contains: the hallucination problem described in Section~\ref{sec:back_halluc}. S1 failed in a different way: when a question shared words with the wrong FAQ entry, it returned that entry's answer confidently (8 wrong). An LLM judge agreed with reference labels on 72 of 78 answers (Cohen's $\kappa = 0.89$). These reference labels were drafted with AI assistance and are still being checked by hand, so the judge will be validated again against my own labels on the development set before it is used. The pilot questions follow the documents' wording closely; the test set adds paraphrases, outdated versions and more unanswerable questions, where S3 is expected to make mistakes and S4 is needed.
+
+\begin{table}[tbp]
+\caption{Pilot results for S1--S3: 20 answerable and 6 unanswerable questions (indicative only).}
+\label{tab:pilot_sys}
+\footnotesize
+\begin{tabular}{lcccccc}
+\toprule
+& \multicolumn{4}{c}{Answerable (of 20)} & Unanswerable & Median \\
+\cmidrule(lr){2-5}
+System & Correct & Partial & Wrong & Escalated & declined (of 6) & latency (s) \\
+\midrule
+S1 FAQ & 8 & 0 & 8 & 4 & 5 & 0.00 \\
+S2 Plain LLM & 6 & 5 & 7 & 2 & 1 & 3.75 \\
+S3 RAG & \textbf{20} & 0 & 0 & 0 & \textbf{6} & 2.64 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Escalation signal.} For S4, the top retrieval scores were tested as signals. The top dense score separated answerable from unanswerable questions well (AUROC 0.88), the top BM25 score less well (0.73), and the gaps between the first two passages were close to chance (0.45 to 0.56). The unanswerable question about the late-payment charge had a higher dense score than six answerable questions, because the fee documents are on the right topic but do not contain the charge. Retrieval scores alone will therefore miss such near-misses, which is why S4 will also compare evidence and model signals (Section~\ref{sec:method_systems}).
+
+\subsection{Cost, Latency and Prototype} \label{sec:feas_proto}
+
+The whole pilot, including the judge, used 130 API calls and cost US\$0.24. S3 cost US\$0.0035 per question with a median latency of 2.6 seconds, well within NF4. Assuming E1 on 200 questions (US\$1.20), twelve retrieval configurations on 200 questions in E2 (US\$8.30), one extra model-signal call per question in E3 (US\$0.70) and judging every answer (US\$3.50), the full evaluation would cost about US\$14, or about RM62 at a cautious RM4.50 per US dollar, below the RM100 limit of NF5 with room for reruns. The working interface (Section~\ref{sec:design_ui}) shows that the full pipeline already runs end to end on a laptop, from a typed question to a cited answer or a logged escalation, and ten unit tests pass.
+
+In summary, every assumption is supported by early evidence and no blocking problem was found. The main remaining risks are that retrieval scores miss near-miss questions and that writing and checking 200 questions takes longer than planned; these are addressed by comparing three signal groups for S4 and by building the test set first (Section~\ref{sec:method_plan}).
 
 % Conclusions
 %%%%%%%%%%%%%%%%%%%%
 \section{Conclusions} \label{cha:concl}
-% TODO (Week 10): short summary of the whole document.
+
+HWUM students need quick, correct answers to questions about fees, deadlines and regulations, but the official information is spread across many documents, and general chatbots answer such questions confidently and often wrongly. The literature shows that retrieval-augmented generation can ground answers in documents, but that citations, abstention and escalation must be measured rather than assumed, and that existing university chatbots rarely test questions they cannot answer. This project will therefore compare an FAQ baseline, a plain LLM, RAG with citations and RAG with confidence-based escalation on the same HWUM documents and test set, using paired statistics and error analysis. The feasibility work shows that the documents, retrieval, grounded generation, an escalation signal and a working interface are all in place at low cost, so Semester 2 can concentrate on the test set, the confidence check and the evaluation.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -292,23 +394,149 @@ The criteria below are provisional and will be fixed in Week 8 using the pilot r
 
 \section{Project Management}
 
-\subsection{Gantt Chart}
-% Semester 1 activities carried out and Semester 2 plan.
+\subsection{Gantt Chart} \label{sec:app_gantt}
 
-\subsection{Risk Analysis}
-% Risk table with likelihood, impact, mitigation and contingency.
+Figure~\ref{fig:gantt1} shows the activities carried out in Semester 1 and Figure~\ref{fig:gantt2} the plan for Semester 2. Weeks are teaching weeks: Semester 1 Week 1 began on 14 September 2026 and Semester 2 Week 1 begins on 18 January 2027. Diamonds are milestones and arrows show dependencies. Weeks 9 and 10 of Semester 2 are kept as slack.
 
-\subsection{Professional, Legal, Ethical and Social Issues}
-% BCS code of conduct, document copyright and terms of use, data protection, ethics approval, social impact.
+\begin{figure}[h]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{ganttchart}[hgrid, vgrid={*{1}{dotted}}, x unit=0.62cm, y unit chart=0.5cm, y unit title=0.55cm,
+  title label font=\scriptsize, bar label font=\footnotesize, milestone label font=\footnotesize\itshape,
+  bar/.append style={fill=blue!25}, milestone/.append style={fill=orange!80}]{1}{12}
+\gantttitle{Semester 1, 2026 (teaching weeks)}{12} \\
+\gantttitlelist{1,...,12}{1} \\
+\ganttbar{Topic, supervision and records}{1}{3} \\
+\ganttbar{Literature review}{2}{9} \\
+\ganttbar{Document audit and source list}{4}{5} \\
+\ganttbar{Ethics application}{4}{7} \\
+\ganttbar{Pilot: ingestion, retrieval, S1}{7}{7} \\
+\ganttbar{Pilot: S2, S3, judge, S4 signals}{7}{8} \\
+\ganttbar{Interface prototype}{8}{8} \\
+\ganttbar{D1 report}{6}{11} \\
+\ganttbar{D2 video}{10}{11} \\
+\ganttmilestone{Ethics application submitted (26 Oct)}{7} \\
+\ganttmilestone{D1 and D2 submitted (26 Nov)}{11}
+\end{ganttchart}}
+\caption{Semester 1: activities carried out (Weeks 1--8) and remaining (Weeks 9--11). Week 6 was a study week.}
+\label{fig:gantt1}
+\end{figure}
 
-\section{Generative AI Summary}
-% Required section: summary of GenAI use in the project and deliverables.
+\begin{figure}[h]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{ganttchart}[hgrid, vgrid={*{1}{dotted}}, x unit=0.62cm, y unit chart=0.5cm, y unit title=0.55cm,
+  title label font=\scriptsize, bar label font=\footnotesize, milestone label font=\footnotesize\itshape,
+  bar/.append style={fill=blue!25}, milestone/.append style={fill=orange!80},
+  link/.style={-{Stealth[length=1.6mm]}, gray, thick}]{1}{16}
+\gantttitle{Break}{2} \gantttitle{Semester 2, 2027 (teaching weeks)}{14} \\
+\gantttitle{Dec}{1} \gantttitle{Jan}{1} \gantttitlelist{1,...,14}{1} \\
+\ganttbar[name=kb]{Full knowledge base}{1}{2} \\
+\ganttbar[name=ts]{Write and label test set}{2}{4} \\
+\ganttbar[name=e2]{E2 retrieval (development set)}{4}{5} \\
+\ganttbar[name=s4]{Build and tune S4 (E3)}{5}{7} \\
+\ganttbar[name=ui]{Complete interface with S4}{6}{8} \\
+\ganttbar[name=fin]{Final test run (E1--E3)}{7}{8} \\
+\ganttbar[name=e4]{Usability study E4 (if approved)}{8}{10} \\
+\ganttbar[name=an]{Analysis and error analysis}{8}{10} \\
+\ganttbar[name=d3]{Write dissertation (D3)}{7}{13} \\
+\ganttbar[bar/.append style={fill=gray!20}]{Slack}{11}{12} \\
+\ganttmilestone{D3 due (1 Apr)}{13} \\
+\ganttbar[bar/.append style={fill=green!25}]{Q\&A session (D5)}{13}{16}
+\ganttlink{kb}{ts} \ganttlink{ts}{e2} \ganttlink{e2}{s4} \ganttlink{s4}{fin} \ganttlink{fin}{an}
+\end{ganttchart}}
+\caption{Semester 2 plan. Arrows show dependencies; the usability study also depends on ethics approval.}
+\label{fig:gantt2}
+\end{figure}
 
-\section{Participant Information Sheet and Consent Form}
-% Only if the usability study or peer labelling goes ahead (see the ethics application).
+\subsection{Risk Analysis} \label{sec:app_risk}
 
-\section{Research Participant Questionnaire}
-% Sample questionnaire, if the usability study goes ahead.
+Table~\ref{tab:risk} rates each risk for likelihood (L) and impact (I) from 1 (very low) to 5 (very high); the score is L$\times$I, where 12 or more is high, 6 to 11 medium and 5 or less low. Each risk has an avoidance step taken in advance and a contingency if it happens anyway.
+
+\begin{table}[h]
+\caption{Risk register.}
+\label{tab:risk}
+\footnotesize
+\begin{tabular}{L{0.04\linewidth}L{0.21\linewidth}@{\hspace{4pt}}c@{\hspace{4pt}}c@{\hspace{4pt}}c@{\hspace{6pt}}L{0.25\linewidth}L{0.25\linewidth}}
+\toprule
+ID & Risk & L & I & Score & Avoidance & Contingency \\
+\midrule
+R1 & Writing and checking 200 questions takes longer than planned & 3 & 4 & 12 & Start in the break; question template; about 25 questions per week & Reduce to 150 questions, keeping the share of unanswerable ones; report the effect on statistical power \\
+R2 & Workload from other courses (coursework, class tests, exams) & 4 & 3 & 12 & One-week sprints; deadlines in the Gantt chart; two weeks of slack & Drop Could requirements (F7, F8) and keep all Must requirements \\
+R3 & S4 signals cannot separate near-miss questions & 3 & 3 & 9 & Compare three signal groups; pilot AUROC 0.88 for the dense score & Report the negative result with the risk--coverage analysis, which still answers RQ3 \\
+R4 & Text extraction errors in tables & 3 & 3 & 9 & Check table pages visually; verify every gold quote & Correct the affected passages by hand and record the fix \\
+R5 & Gemini model retired, changed or more expensive & 2 & 4 & 8 & Pinned model version; every response cached (NF2); cost far below NF5 & Re-run all LLM systems on another model of the same tier \\
+R6 & Ethics approval delayed or refused & 3 & 2 & 6 & Submitted in Week 7; answer reviewer queries quickly & Drop E4 (Could); RQ1--RQ3 are unaffected \\
+R7 & LLM judge disagrees with my labels ($\kappa < 0.6$) & 2 & 3 & 6 & Strict grading prompt; validate on the development set & Label all test answers by hand (about 15 hours) \\
+R8 & University documents change during the project & 3 & 2 & 6 & Frozen, dated snapshot and source list with access dates & Keep the snapshot; note the change as a limitation \\
+R9 & API key exposed in the public repository & 2 & 3 & 6 & Key kept in an ignored .env file; repository made private at the end & Revoke and replace the key at once \\
+R10 & Laptop failure or data loss & 1 & 4 & 4 & Code on GitHub; documents on OneDrive & Restore from the remote copies; continue on a lab machine \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Professional, Legal, Ethical and Social Issues} \label{sec:app_ples}
+
+\textbf{Professional.} The project follows the BCS Code of Conduct \cite{bcs2022code}. In the public interest, the assistant gives students information from official sources and refers them to staff rather than guessing. Under professional competence and integrity, results are reported honestly: pilot numbers are called indicative, negative results will be reported, and the limits of the system (one LLM family, author-written questions, simulated escalation) are stated. All third-party work, including libraries, models and documents, is acknowledged, and the use of generative AI is declared in Appendix~\ref{sec:app_genai}.
+
+\textbf{Legal.} No personal data is collected or processed by the system, so the Personal Data Protection Act 2010 \cite{pdpa2010} and the UK GDPR that applies to Heriot-Watt as data controller are respected by design: the interface asks students not to type personal details, and only the question text of an escalation is stored. The usability study collects only pseudonymised questionnaire data, handled as described in the approved information sheet. The university documents are protected by copyright \cite{copyright1987}; they are used only for non-commercial research, cited by page rather than copied, and are not redistributed (the PDFs are excluded from the public repository). Permission to use them is being confirmed through the supervisor. The Gemini API is used under Google's terms on the paid tier, where inputs are not used to train Google's models \cite{google2026pricing}, and all software libraries are used under their open-source licences.
+
+\textbf{Ethical.} The main ethical risk is harm from wrong answers about fees, deadlines or penalties. The design reduces it by answering only from official documents, showing sources and escalating when evidence is weak, and the interface tells students that it is a prototype and that official sources and staff decisions take precedence. Sensitive topics such as mental health, personal financial hardship and disciplinary cases are out of scope (Section~\ref{sec:intro_scope}). Students always know they are using an automated system. No participants take part before ethics approval, and participants give informed consent, can withdraw at any time and are not asked about their own circumstances. Because LLM judges and AI-assisted labelling can be biased, every automatic label is validated against my own labels before it is used.
+
+\textbf{Social.} The assistant is meant to support Student Services, not replace it: it handles routine factual questions and passes everything else to people, so staff can spend more time on cases that need judgement. It could make information more accessible outside office hours, but students who prefer human contact or are less confident in English may benefit less; the English-only scope is stated as a limitation. Over-reliance is reduced by showing sources so students can check answers, and the energy cost of LLM calls is limited by caching and a small knowledge base.
+
+
+\section{Requirements} \label{sec:app_req}
+
+\begin{table}[h]
+\caption{Requirements with MoSCoW priority and the objective each supports.}
+\label{tab:req}
+\footnotesize
+\begin{tabular}{L{0.06\linewidth}L{0.68\linewidth}L{0.09\linewidth}L{0.07\linewidth}}
+\toprule
+ID & Requirement & Priority & Obj. \\
+\midrule
+F1 & Ingest documents into passages that keep document, page and version. & Must & O2 \\
+F2 & Answer with citations to the supporting document and page. & Must & O3 \\
+F3 & Escalate low-confidence questions to the relevant office. & Must & O3 \\
+F4 & Run any of the four systems from configuration, without code changes. & Must & O3 \\
+F5 & Run the evaluation automatically and log every answer, source and score. & Must & O4 \\
+F6 & Web interface showing answers, sources and escalations, with a staff view. & Should & O5 \\
+F7 & Warn when an answer relies on an outdated document version. & Could & O3 \\
+F8 & Support a small usability study (subject to ethics approval). & Could & O5 \\
+F9 & Multi-turn chat, personal student records, live university systems. & Won't & -- \\
+\midrule
+NF1 & No personal data is sent to the LLM. & Must & -- \\
+NF2 & Reproducible: fixed configuration, frozen snapshot, logged runs. & Must & O4 \\
+NF3 & Runs on a CPU-only laptop, with generation through a hosted API. & Must & -- \\
+NF4 & Median response time of 10 seconds or less. & Should & O4 \\
+NF5 & Total API cost for all experiments below RM100. & Should & O4 \\
+NF6 & Unit tests cover ingestion, retrieval, the baseline and escalation logging. & Should & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Generative AI Summary} \label{sec:app_genai}
+
+Generative AI was used in two separate ways in this project.
+
+\textbf{As part of the system.} Google's Gemini 3.6 Flash, accessed through its paid API, generates the answers of S2 to S4 and acts as the LLM judge. Only public university documents and test questions that I wrote are sent to it, never personal data (NF1), and paid-tier inputs are not used to train Google's models. Its outputs are evaluated rather than trusted: hallucination, citation accuracy and judge agreement are measured (Sections~\ref{sec:method_eval} and~\ref{sec:feas_pilot}).
+
+\textbf{As an assistant while doing the project.} I used Claude (Anthropic), through Claude Code, to: (1) search for related papers and check the bibliographic details of every reference against publisher or repository pages; (2) write and debug code (ingestion, retrieval, the systems, the evaluation scripts and the web interface), which I reviewed, ran and tested; (3) draft the first version of the reference labels for the 78 pilot answers, which I am checking by hand (Section~\ref{sec:feas_pilot}); (4) draft and edit parts of this report, including tables and diagrams, from my notes, my supervisor's feedback and the pilot results; and (5) compare the structure of past dissertations with the marking criteria. I reviewed and revised all text and remain responsible for every claim. Every number in this report comes from scripts in the project repository and was checked against their output files, and every reference was checked against its source, to guard against invented references or wrong figures.
+
+\section{Participant Information Sheet and Consent Form} \label{sec:app_forms}
+
+The information sheet and consent form below were submitted with the ethics application on 26 October 2026. They will be used only if the usability study or peer labelling is approved.
+
+\includepdf[pages=-, scale=0.8, frame, pagecommand={}]{images/appendix_information_sheet.pdf}
+\includepdf[pages=-, scale=0.8, frame, pagecommand={}]{images/appendix_consent_form.pdf}
+
+\section{Research Participant Questionnaire} \label{sec:app_questionnaire}
+
+The questionnaire (prepared questions, System Usability Scale \cite{brooke1996sus} and trust items) was submitted with the ethics application and will be used in E4 if it is approved.
+
+\includepdf[pages=-, scale=0.8, frame, pagecommand={}]{images/appendix_questionnaire.pdf}
+
 
 % Rest of appendices...
 

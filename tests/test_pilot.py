@@ -94,3 +94,15 @@ def test_s3_citation_parsing_and_abstain():
     s3.llm = FakeLLM("NOT_FOUND")
     out = s3.answer("library hours?")
     assert out["abstained"] is True and out["answer"] == "Please contact staff."
+
+
+def test_escalation_log_adds_and_resolves(tmp_path):
+    from src.escalations import EscalationLog
+    log = EscalationLog(tmp_path / "esc.jsonl")
+    first = log.add("Can I get a refund?", "S3")
+    log.add("When does the library close?", "S3")
+    assert len(log.all()) == 2 and all(e["status"] == "open" for e in log.all())
+    assert log.resolve(first["id"], "replied by email")
+    resolved = [e for e in log.all() if e["id"] == first["id"]][0]
+    assert resolved["status"] == "resolved" and resolved["note"] == "replied by email"
+    assert not log.resolve("NOPE")

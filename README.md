@@ -37,6 +37,7 @@ python -m eval.confidence_pilot   # S4 pilot: retrieval scores as an escalation 
 python -m src.demo                # demo: S1 vs search with citations
 python -m src.systems S3 "How many times can I resit a course?"
 python -m pytest -q
+streamlit run src/app.py          # web interface prototype (student and staff views)
 ```
 
 Gemini responses are cached in `data/cache/llm_cache.jsonl`, so rerunning gives identical results without new API calls.
