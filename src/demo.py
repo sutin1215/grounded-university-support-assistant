@@ -2,7 +2,8 @@
 
 Shows, for a few student questions, what each approach returns:
   - S1 FAQ baseline: the matched FAQ answer (or ESCALATE), with its similarity score
-  - Retrieval (BM25): the top passages from the official documents, with document and page
+  - Retrieval (plain BM25, kept on purpose to show its failures): the top passages from the official
+    documents, with document and page. S3 uses hybrid retrieval instead (see eval/results/pilot_summary.md).
 
 Usage:
   python -m src.demo                      # runs the prepared demo questions
@@ -16,7 +17,7 @@ from src.retrieve import BM25Retriever, load_chunks
 
 DEMO_QUESTIONS = [
     "Can I self-certify if I was sick for a few days?",          # both work
-    "Can I ask my lecturer for an extension on an assignment?",  # both miss: "extension" vs "extensions" (no stemming yet)
+    "Can I ask my lecturer for an extension on an assignment?",  # both miss: "extension" vs "extensions" (plain BM25 has no stemming; hybrid ranks it first)
     "What is the charge if I pay my fees after the deadline?",   # not in documents: FAQ answers wrongly
     "What time does the library close on Saturdays?",            # not in documents: retrieval still returns passages, so escalation is needed
 ]

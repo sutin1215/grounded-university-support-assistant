@@ -331,7 +331,7 @@ An audit in Weeks 4 and 5 found 27 sources on fees, deadlines and late submissio
 
 \subsection{Pilot Study} \label{sec:feas_pilot}
 
-\textbf{Retrieval.} Table~\ref{tab:pilot_ret} compares the five retrievers on the 20 answerable questions. Hybrid retrieval was best (hit@5 0.95, MRR 0.79). The lexical and dense methods failed on different questions (dense search missed two gold passages that BM25 found, and BM25 missed one that dense search ranked first), so combining them helped, consistent with BEIR \cite{thakur2021beir}. Stemming improved BM25's MRR from 0.69 to 0.74. S3 therefore uses hybrid retrieval with five passages.
+\textbf{Retrieval.} Table~\ref{tab:pilot_ret} compares the five retrievers on the 20 answerable questions. Hybrid retrieval was best (hit@5 0.95, MRR 0.79). The lexical and dense methods failed on different questions (dense search missed three gold passages that BM25 found, and BM25 missed one that dense search ranked first), so combining them helped, consistent with BEIR \cite{thakur2021beir}. Stemming improved BM25's MRR from 0.69 to 0.74. S3 therefore uses hybrid retrieval with five passages.
 
 \begin{table}[tbp]
 \caption{Retrieval pilot on 20 answerable questions (top five passages).}

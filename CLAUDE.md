@@ -111,10 +111,13 @@ As of 7 Nov 2026 (Week 8):
 
 ## Known issues
 
-- `.env.example` says `LLM_API_KEY`, but the code reads `GEMINI_API_KEY`.
-- `.venv` is missing `sentence-transformers` (and torch), so `dense`, `hybrid`, S3 and `confidence_pilot` fail
-  in the venv. Install with `pip install -r requirements.txt` (CPU torch first, see the note in the file).
+- **GenAI declaration is deliberately left for last** (student's choice, to standardise it once everything else is
+  done): the D1 "Generative AI Summary" appendix is not yet accurate (it says the student wrote the test questions,
+  omits Claude drafting the pilot questions, gold answers and FAQ, and names only Claude Code although claude.ai was
+  also used), and the declaration's GenAI statement in `hwu_template/declaration.tex` is still template text.
+  Do not edit these unless asked.
 - All 78 rows in `eval/labels/pilot_manual_labels.csv` were drafted by Claude ("to be checked"). Until the student
   reviews them, the "manual labels" and the judge kappa of 0.89 compare two AI labellers, not human vs judge. Do
   not report them as human labels.
-- `src/demo.py` comments describe the pre-stemming pilot (BM25 only).
+- The GitHub repo is public and contains the D1 draft and the student ID: make it private before submission
+  (plagiarism checkers can match the report against it).
