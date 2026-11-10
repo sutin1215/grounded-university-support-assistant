@@ -5,5 +5,11 @@ toolbarMode = "viewer"   # hide developer menus such as "Deploy"
 [browser]
 gatherUsageStats = false
 
+[server]
+enableStaticServing = true   # serves src/static (fonts) at /app/static
+
 [theme]
-primaryColor = "#1f5f8b"
+primaryColor = "#2d6a64"
+backgroundColor = "#f3f5f1"
+secondaryBackgroundColor = "#e9ece6"
+textColor = "#1f2a2e"

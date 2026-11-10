@@ -29,7 +29,7 @@ NF1 to NF6, with success criteria SC1 to SC5. All of these are defined in `d1/ma
 - `src/`: `config.py` (loads `configs/pilot.yaml`, resolves paths from repo root), `ingest.py` (PDF to page-tagged
   chunks), `retrieve.py` (bm25, bm25_stem, tfidf, dense, hybrid RRF), `llm.py` (Gemini client with cache, cost and
   retry), `systems.py` (S1 to S3 behind `answer(question) -> dict`), `faq_baseline.py`, `demo.py` (supervisor demo),
-  `app.py` (Streamlit web interface: student and staff views), `escalations.py` (escalation log, `data/escalations.jsonl`, gitignored)
+  `app.py` (Streamlit web interface "AskWatt": student and staff views; style in `static/style.css`, fonts in `static/fonts`), `escalations.py` (escalation log, `data/escalations.jsonl`, gitignored)
 - `eval/`: pilot harness. `pilot_questions.csv` (26 questions: 20 answerable, 6 unanswerable, each with gold answer, doc, quote and page),
   `labels/pilot_manual_labels.csv`, `results/` (generated tables, committed)
 - `configs/`: `pilot.yaml` (all settings) and `prompts.yaml` (all prompts, reported verbatim in the dissertation)
@@ -97,7 +97,7 @@ As of 7 Nov 2026 (Week 8):
 - Done: ingestion (5 PDFs, 45 chunks), 5 retrievers (hybrid best: hit@5 0.95, MRR 0.79), S1 to S3 pilot
   (correct on 20 answerable: S1 8, S2 6, S3 20; unanswerable declined: S1 5/6, S2 1/6, S3 6/6), LLM judge
   (kappa 0.89 vs draft labels), S4 signal pilot (dense top score AUROC 0.88), Streamlit UI prototype on S3 (F6).
-  D1 restructured after meeting 5 and fully drafted (main body 14 pages, 51 references): Introduction, Background
+  D1 restructured after meeting 5 and fully drafted, then simplified on 10 Nov (main body about 12.5 pages, 51 references): Introduction, Background
   (comparison and technology tables), Methodology (agile, plan, design: architecture, use case, UI), Feasibility,
   Conclusions, appendices (Gantt, risks, PLES, requirements, GenAI, ethics forms).
 - Next: student review of the full draft; full D1 draft to supervisor **Wed 11 Nov**; meeting **Fri 13 Nov**;

@@ -174,3 +174,17 @@ plan with the forms in the appendix or something to run now; OK to build a worki
 - Open points for the student: confirm the GenAI summary is accurate; fill the GenAI statement in the declaration
   (it lives in `hwu_template/declaration.tex`, which the rules say not to edit, so he decides how); acknowledgements
   text; the forms still show `[YOUR HW EMAIL]` placeholders; check Brooke 1996 details; review the 78 draft labels.
+
+## Update, 10 Nov 2026
+
+- Student read the draft up to Methodology: liked it but asked to simplify. Compared with the D1 samples (Nur Damia,
+  Chia, Mackinnon, Izzat), our Methodology was longer and deeper than usual.
+- Background simplified: shorter literature review, chatbot table cut to 5 systems plus this project, tech table trimmed;
+  every table and figure in Background and Methodology now uses [H] (float package) so it stays in its own section.
+- Methodology restructured: 3.1 approach, 3.2 plan (table), 3.3 requirements (MoSCoW table back in the main body),
+  3.4 system design (architecture and four systems, use cases, UI), 3.5 evaluation plan, 3.6 success criteria.
+  Requirements appendix removed. Main body now ends on page 12 (about 2 pages spare).
+- Interface redesigned and named AskWatt ("ask what?"): highlighted-handbook look, Atkinson Hyperlegible + Literata
+  (OFL fonts served from src/static/fonts), citation markers as highlighter marks, page tabs, referral card, staff queue.
+  Student rejected "Tanya" (too local) and "Wayfinder"; chose AskWatt.
+- Feasibility deliberately not changed yet (student's request); next: his read of Feasibility onwards.

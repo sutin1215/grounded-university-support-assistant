@@ -1,0 +1,114 @@
+/* Visual style for the web interface (src/app.py).
+   Idea: a student's highlighted handbook. Answers read like a page of an official document,
+   citations are highlighter marks, and each source is a page tab the student can open.
+   Fonts (SIL Open Font Licence, files in this folder): Atkinson Hyperlegible for the interface,
+   chosen for legibility; Literata for answer text, designed for long reading. */
+
+@font-face { font-family: "Atkinson Hyperlegible"; font-weight: 400; font-display: swap;
+  src: url("/app/static/fonts/atkinson-hyperlegible-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Atkinson Hyperlegible"; font-weight: 700; font-display: swap;
+  src: url("/app/static/fonts/atkinson-hyperlegible-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Literata"; font-weight: 400; font-display: swap;
+  src: url("/app/static/fonts/literata-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Literata"; font-weight: 400; font-style: italic; font-display: swap;
+  src: url("/app/static/fonts/literata-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: "Literata"; font-weight: 700; font-display: swap;
+  src: url("/app/static/fonts/literata-latin-700-normal.woff2") format("woff2"); }
+
+:root {
+  --paper: #f3f5f1;      /* page background, cool off-white */
+  --sheet: #ffffff;      /* answer sheets */
+  --ink: #1f2a2e;        /* text */
+  --muted: #5b6766;      /* secondary text */
+  --teal: #2d6a64;       /* actions and links */
+  --marker: #f3d250;     /* highlighter: citations and page tabs */
+  --refer: #46569e;      /* referral to staff */
+  --rule: #d8ddd7;       /* hairlines */
+  --ui: "Atkinson Hyperlegible", system-ui, sans-serif;
+  --read: "Literata", Georgia, serif;
+}
+
+html, body, .stApp, .stApp p, .stApp li, .stApp label, .stApp button, .stApp input, .stApp textarea { font-family: var(--ui); }
+[data-testid="stIconMaterial"] { font-family: "Material Symbols Rounded" !important; }
+.stApp { background: var(--paper); color: var(--ink); }
+.block-container { max-width: 760px; padding-top: 2.2rem; }
+.stApp a, .stApp a:visited { color: var(--teal) !important; text-underline-offset: 3px; }
+.stApp a:hover { color: var(--ink) !important; }
+:focus-visible { outline: 3px solid var(--marker) !important; outline-offset: 2px; }
+
+/* Header: wordmark with a single highlighter stroke, the one bold element */
+.masthead { margin: 0 0 1.4rem; }
+.stApp h1.wordmark { font: 700 2.6rem/1.05 var(--ui); letter-spacing: -0.01em; margin: 0 0 0 -0.15em;
+  display: inline-block; padding: 0 0.15em !important; color: var(--ink);
+  background: linear-gradient(transparent 46%, var(--marker) 46%, var(--marker) 80%, transparent 80%); }
+.tagline { font: 400 1.05rem/1.5 var(--ui); color: var(--muted); margin: 0.7rem 0 0; max-width: 34em; }
+.notice { font-size: 0.88rem; color: var(--muted); border-left: 3px solid var(--rule);
+  padding: 0.1rem 0 0.1rem 0.8rem; margin: 1rem 0 0; }
+
+/* Example questions */
+.stApp p.try { font: 700 0.95rem var(--ui); margin: 2rem 0 0.2rem; }
+.stButton > button { background: var(--sheet); color: var(--ink); border: 1px solid var(--rule);
+  border-radius: 999px; font-weight: 400; text-align: left; padding: 0.45rem 1rem; }
+.stButton > button:hover { border-color: var(--teal); color: var(--teal); background: var(--sheet); }
+
+/* A question and its answer */
+.stApp p.asked { font: 700 1.12rem/1.4 var(--ui); margin: 2.2rem 0 0.3rem; padding-left: 0.8rem;
+  border-left: 3px solid var(--teal); }
+.sheet { background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px;
+  padding: 1.3rem 1.5rem 1.1rem; }
+.answer { font: 400 1.04rem/1.7 var(--read); margin: 0; }
+.answer p { margin: 0 0 0.8rem; }
+.answer ul { margin: 0 0 0.8rem 1.1rem; padding: 0; }
+.cite { font: 700 0.78rem var(--ui); background: var(--marker); color: var(--ink);
+  padding: 0.05rem 0.32rem; border-radius: 2px; margin: 0 0.1rem; vertical-align: 0.12em; }
+
+/* Sources: each cited page is a tab with its page number */
+.sources { margin: 1rem 0 0; padding-top: 0.9rem; border-top: 1px solid var(--rule); }
+.sources h4 { font: 700 0.9rem var(--ui); margin: 0 0 0.6rem; color: var(--muted); }
+.source { display: grid; grid-template-columns: 4.2rem 1fr; gap: 0.9rem; align-items: start;
+  margin-bottom: 0.7rem; }
+.tab { background: var(--marker); text-align: center; padding: 0.35rem 0 0.3rem; border-radius: 2px 2px 0 0;
+  font: 700 1.05rem/1 var(--ui); }
+.tab small { display: block; font: 400 0.72rem var(--ui); margin-top: 0.2rem; }
+.doc { font-size: 0.95rem; line-height: 1.4; }
+.doc .version { color: var(--muted); }
+.doc a { font-weight: 700; }
+.meta { font-size: 0.82rem; color: var(--muted); margin: 0.8rem 0 0; }
+
+/* Referral to Student Services */
+.sheet.refer { border-left: 5px solid var(--refer); }
+.stApp .refer h3 { font: 700 1.1rem var(--ui); margin: 0 0 0.4rem; padding: 0 !important; color: var(--refer); }
+.refer p { font: 400 1rem/1.6 var(--read); margin: 0 0 0.9rem; }
+.ticket { display: inline-block; border: 1.5px dashed var(--refer); color: var(--refer);
+  padding: 0.35rem 0.8rem; font: 700 0.95rem var(--ui); border-radius: 3px; }
+.ticket span { font-weight: 400; }
+
+/* Staff view */
+.waiting { font: 400 1.05rem var(--ui); color: var(--muted); margin: 0.4rem 0 1.2rem; }
+.waiting b { color: var(--ink); }
+table.queue { width: 100%; border-collapse: collapse; background: var(--sheet);
+  border: 1px solid var(--rule); font-size: 0.95rem; }
+.queue th { text-align: left; font-weight: 700; padding: 0.65rem 0.8rem; border-bottom: 2px solid var(--ink); }
+.queue td { padding: 0.7rem 0.8rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.queue td.q { font-family: var(--read); }
+.pill { font-size: 0.8rem; padding: 0.12rem 0.55rem; border-radius: 999px; white-space: nowrap; }
+.pill.open { border: 1.5px solid var(--refer); color: var(--refer); }
+.pill.resolved { background: var(--teal); color: #fff; }
+
+/* Sidebar and input */
+section[data-testid="stSidebar"] { background: #e9ece6; border-right: 1px solid var(--rule); }
+section[data-testid="stSidebar"] .kb { font-size: 0.85rem; color: var(--muted); line-height: 1.45; }
+section[data-testid="stSidebar"] .kb li { margin-bottom: 0.35rem; }
+[data-testid="stChatInput"] textarea { font-size: 1rem; }
+[data-testid="stChatInput"] { border-color: var(--teal); }
+
+@media (max-width: 640px) {
+  .wordmark { font-size: 2.1rem; }
+  .sheet { padding: 1rem; }
+  .source { grid-template-columns: 3.4rem 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+header[data-testid="stHeader"] { background: transparent; }
+/* Reading text in Literata; this overrides the interface font set on .stApp p above */
+.stApp .answer p, .stApp .answer li, .stApp .refer p, .stApp td.q { font-family: var(--read); }
+.stApp .doc { font-family: var(--ui); }
