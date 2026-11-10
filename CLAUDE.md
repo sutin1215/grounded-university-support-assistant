@@ -78,7 +78,12 @@ Order matters: ingest, then locate_gold, then run_pilot or run_systems, then jud
 - Code style: module docstring with purpose and `Usage:` line, short plain-English comments, small functions, no
   frameworks beyond `requirements.txt`. Call `sys.stdout.reconfigure(encoding="utf-8", errors="replace")` in CLI
   entry points (Windows console).
+- **Commits:** the student commits. Claude gives the exact commands and commits or pushes only when the student
+  explicitly says to ("do it"). When committing for them, commit as the student (the laptop's git config
+  already has their name and email; never write the email into a repo file) with **no Claude Co-Authored-By
+  trailer**. Never push without being asked.
 - Commit messages: short imperative summary of what changed and why (see `git log`).
+- Records (journal, meetings) keep true dates; nothing is back-dated.
 
 ## D1 report (`d1/`)
 
