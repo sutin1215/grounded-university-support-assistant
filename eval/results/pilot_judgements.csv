@@ -77,3 +77,21 @@ U05,S3,DECLINED,"The question is unanswerable from the documents, and the chatbo
 U06,S1,DECLINED,"The question is unanswerable from the knowledge base, and the chatbot correctly declined to answer and referred the user to staff without inventing details."
 U06,S2,ANSWERED,"The question cannot be answered from the official documents, but the chatbot provided a specific answer containing unsupported details instead of declining."
 U06,S3,DECLINED,The chatbot correctly declined to answer an unanswerable question and referred the student to university staff.
+P01,S1,WRONG,The chatbot provided completely irrelevant information about semester fees instead of answering the question about coursework deadlines.
+P01,S2,PARTIAL,"The chatbot correctly states that deadlines are typically set on weekdays during working hours, but it introduces unsupported details claiming that deadlines may occasionally be set on Sundays."
+P01,S3,CORRECT,"The chatbot correctly states that coursework deadlines fall on weekdays at equitable times across time zones, meaning it should not be due on a Sunday."
+P02,S1,WRONG,The chatbot completely misinterprets the question and provides irrelevant information about extensions instead of addressing class tests during exam weeks.
+P02,S2,CORRECT,"The chatbot correctly states that lecturers are not permitted to set class tests during exam weeks, matching the key facts of the reference answer."
+P02,S3,CORRECT,The chatbot accurately answers the question with the exact rule provided in the reference answer.
+P03,S1,PARTIAL,The chatbot provides a key fact about the passing grade requirement but fails to explicitly answer the user's main question about whether they need to retake the course.
+P03,S2,CORRECT,The chatbot accurately confirms that a core course requires at least a Grade D to pass and that a re-assessment or retake is necessary despite getting an E.
+P03,S3,CORRECT,The chatbot correctly states all the key facts from the reference answer despite the slight truncation at the very end.
+P04,S1,WRONG,The chatbot declined to answer a question that is answerable using the official documents.
+P04,S2,WRONG,The chatbot states it does not know the timeframe and declines to answer an answerable question.
+P04,S3,CORRECT,The chatbot accurately states the timeframe of 10 working days from the university receiving the application and supporting evidence.
+N01,S1,DECLINED,"The question is unanswerable from the documents, and the chatbot correctly declined to answer and referred the user to staff without inventing facts."
+N01,S2,DECLINED,"The question is unanswerable from the documents, and the chatbot correctly states that it does not know the exact cost without inventing specific fee amounts."
+N01,S3,DECLINED,"The question cannot be answered from the official documents, and the chatbot correctly states that it cannot find the information and refers the student to an appropriate office."
+N02,S1,ANSWERED,The chatbot answered an unanswerable question with irrelevant information instead of declining to answer or referring to staff.
+N02,S2,ANSWERED,"The question cannot be answered from the official documents, but the chatbot provided a detailed specific answer instead of declining."
+N02,S3,DECLINED,"The question is unanswerable from the documents, and the chatbot correctly states that it cannot find the information and directs the student to staff."

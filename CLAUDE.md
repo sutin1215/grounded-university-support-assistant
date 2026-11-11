@@ -30,7 +30,8 @@ NF1 to NF6, with success criteria SC1 to SC5. All of these are defined in `d1/ma
   chunks), `retrieve.py` (bm25, bm25_stem, tfidf, dense, hybrid RRF), `llm.py` (Gemini client with cache, cost and
   retry), `systems.py` (S1 to S3 behind `answer(question) -> dict`), `faq_baseline.py`, `demo.py` (supervisor demo),
   `app.py` (Streamlit web interface "AskWatt": student and staff views; style in `static/style.css`, fonts in `static/fonts`), `escalations.py` (escalation log, `data/escalations.jsonl`, gitignored)
-- `eval/`: pilot harness. `pilot_questions.csv` (26 questions: 20 answerable, 6 unanswerable, each with gold answer, doc, quote and page),
+- `eval/`: pilot harness. `pilot_questions.csv` (32 questions: Q01-Q20 answerable, U01-U06 unanswerable, plus P01-P04
+  paraphrased and N01-N02 near-miss added 11 Nov; each answerable one has gold answer, doc, quote and page),
   `labels/pilot_manual_labels.csv`, `results/` (generated tables, committed)
 - `configs/`: `pilot.yaml` (all settings) and `prompts.yaml` (all prompts, reported verbatim in the dissertation)
 - `data/`: `doc_sources.csv` (27 sources with version, scope and staleness-test flags), `faq.csv` (12 FAQs),
@@ -54,12 +55,17 @@ Use the project venv: `.venv/Scripts/python.exe` (Windows). Run modules from the
 .venv/Scripts/python.exe -m eval.judge                 # LLM judge labels
 .venv/Scripts/python.exe -m eval.score_systems         # eval/results/pilot_systems_summary.md
 .venv/Scripts/python.exe -m streamlit run src/app.py   # web interface prototype (cached questions cost nothing)
-.venv/Scripts/python.exe -m eval.confidence_pilot      # S4 signal pilot (AUROC)
+.venv/Scripts/python.exe -m eval.model_signal          # S4 model signal: LLM "are these passages enough?" (paid, cached)
+.venv/Scripts/python.exe -m eval.confidence_pilot      # S4 signal pilot (AUROC + bootstrap CI; includes the model signal)
+.venv/Scripts/python.exe -m eval.label_evidence        # evidence file for checking the reference labels (no LLM)
+.venv/Scripts/python.exe -m eval.plot_signals          # d1/images/signal_plot.tex from confidence_pilot.csv
+.venv/Scripts/python.exe -m eval.cost_projection       # Semester 2 cost projection from measured pilot costs
 .venv/Scripts/python.exe -m src.systems S3 "question"  # one answer
 .venv/Scripts/python.exe tools/build_journal.py docs/journal/journal_NN_week_X.md
 ```
 
-Order matters: ingest, then locate_gold, then run_pilot or run_systems, then judge, then score_systems.
+Order matters: ingest, then locate_gold, then run_pilot or run_systems, then judge, then score_systems;
+model_signal before confidence_pilot, then plot_signals; label_evidence after judge.
 
 ## Rules
 
@@ -72,7 +78,7 @@ Order matters: ingest, then locate_gold, then run_pilot or run_systems, then jud
   systems identical except for the factor being tested. Put settings in config, not hard-coded (F4).
 - **No personal data to the LLM** (NF1). Only public documents and test questions.
 - **Tuning only on the dev split.** The final test split (planned: about 60 dev and 140 test out of 200 questions) is used once.
-- Pilot numbers are 26 questions: always call them indicative, not final results.
+- Pilot numbers are 32 questions: always call them indicative, not final results.
 - New systems implement the same `answer()` dict shape (`system`, `answer`, `abstained`, `citations`, tokens,
   latency, cost) so `eval/` scripts work unchanged. Add unit tests in `tests/` with fakes (see `FakeLLM` and `FakeRetriever`).
 - Code style: module docstring with purpose and `Usage:` line, short plain-English comments, small functions, no
@@ -98,26 +104,28 @@ Order matters: ingest, then locate_gold, then run_pilot or run_systems, then jud
 
 ## Status (update as work moves on)
 
-As of 7 Nov 2026 (Week 8):
-- Done: ingestion (5 PDFs, 45 chunks), 5 retrievers (hybrid best: hit@5 0.95, MRR 0.79), S1 to S3 pilot
-  (correct on 20 answerable: S1 8, S2 6, S3 20; unanswerable declined: S1 5/6, S2 1/6, S3 6/6), LLM judge
-  (kappa 0.89 vs draft labels), S4 signal pilot (dense top score AUROC 0.88), Streamlit UI prototype on S3 (F6).
-  D1 restructured after meeting 5 and fully drafted, then simplified on 10 Nov (main body about 12.5 pages, 51 references): Introduction, Background
-  (comparison and technology tables), Methodology (agile, plan, design: architecture, use case, UI), Feasibility,
-  Conclusions, appendices (Gantt, risks, PLES, requirements, GenAI, ethics forms).
-- Next: student review of the full draft; full D1 draft to supervisor **Wed 11 Nov**; meeting **Fri 13 Nov**;
-  D1 deadline 26 Nov (aim 24 Nov); D2 video script. Then: 200-question test set, S4, E1 to E3 at scale.
+As of 11 Nov 2026 (Week 9), D1 final pass (ethics approved in November 2026):
+- Pilot re-run end to end and extended to 32 questions (24 answerable, 8 unanswerable). Retrieval on 24:
+  hybrid hit@1 0.71, hit@5 0.92, MRR 0.78. Correct on 24 answerable: S1 8, S2 8, S3 24; unanswerable declined:
+  S1 6/8, S2 2/8, S3 8/8. Judge vs reference labels: 90/96, kappa 0.91. S4 signals (AUROC, bootstrap 95% CI):
+  dense top 0.85 [0.69, 0.97], BM25 top 0.71, model signal 1.00 (8 negatives only). Pilot cost US$0.37 (192 calls);
+  projection US$5.77 (`eval/results/cost_projection.md`). 5 of 64 LLM answers truncated by the 1,024-token cap
+  (thinking tokens count): raise it before the Semester 2 evaluation (this invalidates the cache, so rerun costs apply).
+- D1 edited for the final pass (see `docs/checkpoint_d1_final_pass.md`); the student compiles in Overleaf.
+- Labels: all 96 reviewed and confirmed by the student on 11 Nov (6 disputed ones decided by them).
+- D1 compiled locally on 11 Nov (MiKTeX; build steps in `docs/checkpoint_d1_final_pass.md`): main body 14 pages.
+- Next: student reads the PDF, uploads the d1 files to Overleaf; GenAI box last; D1 deadline 26 Nov.
+  Then: 200-question test set, S4, E1 to E3, E4 usability study in Semester 2 Weeks 6-8.
 - Supervisor meetings: usually Tuesdays 11:30 (meeting 6 moved to Fri 13 Nov). Notes go in `docs/meetings/`, weekly journal in `docs/journal/`.
+
+## Work in progress
+
+- **D1 final pass: read `docs/checkpoint_d1_final_pass.md` before continuing it.**
 
 ## Known issues
 
-- **GenAI declaration is deliberately left for last** (student's choice, to standardise it once everything else is
-  done): the D1 "Generative AI Summary" appendix is not yet accurate (it says the student wrote the test questions,
-  omits Claude drafting the pilot questions, gold answers and FAQ, and names only Claude Code although claude.ai was
-  also used), and the declaration's GenAI statement in `hwu_template/declaration.tex` is still template text.
-  Do not edit these unless asked.
-- All 78 rows in `eval/labels/pilot_manual_labels.csv` were drafted by Claude ("to be checked"). Until the student
-  reviews them, the "manual labels" and the judge kappa of 0.89 compare two AI labellers, not human vs judge. Do
-  not report them as human labels.
+- **GenAI declaration box is deliberately left for last** (student's choice): the statement in
+  `hwu_template/declaration.tex` is still template text. Do not edit it unless asked. Appendix B facts were
+  corrected on 11 Nov.
 - The GitHub repo is public and contains the D1 draft and the student ID: make it private before submission
   (plagiarism checkers can match the report against it).

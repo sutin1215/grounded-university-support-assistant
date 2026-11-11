@@ -25,3 +25,9 @@ U03,What is the charge if I pay my fees after the deadline?,fees,no,Not covered 
 U04,How is my honours degree classification calculated?,assessment,no,Not covered by these documents: escalate.,,,,ESCALATE
 U05,Who is the programme leader for Computing Science?,staff,no,Not in the knowledge base: escalate.,,,,ESCALATE
 U06,What scholarships are available for Malaysian students?,financial aid,no,Not in the knowledge base: escalate.,,,,ESCALATE
+P01,Could my coursework be due on a Sunday?,deadlines,yes,"Normally no: coursework deadlines should fall on weekdays, at equitable times for all time zones (e.g. 09:00-17:00 local time).",ltbp-submission-coursework.pdf,Coursework deadlines should fall on weekdays,1,NONE
+P02,Is my lecturer allowed to set a class test in the exam weeks?,deadlines,yes,No. Class tests must not be scheduled during exam periods.,ltbp-submission-coursework.pdf,Class tests must not be scheduled during exam periods,1,NONE
+P03,I got an E in a core course. Do I still need to retake it even though I got the credits?,assessment,yes,"Yes. Grade E gains the credit points, but a core or continuing course needs at least a Grade D to pass, so a re-assessment is required.",hapsug.pdf,you have to take a re-assessment because the course in question is a continuing or core course,1,NONE
+P04,"After I send in my MC form, how soon will I hear back?",mitigating circumstances,yes,Within ten working days of the university receiving the application and supporting evidence (outcome of the Stage 1 review).,mc-procedure.pdf,within ten working days from receipt of their application,3,NONE
+N01,How much does it cost to resit a course I failed?,fees,no,Not covered by these documents (they describe resits but give no resit fee): escalate.,,,,ESCALATE
+N02,How do I appeal against a decision on my mitigating circumstances?,mitigating circumstances,no,Not covered by these documents (the MC procedure does not describe appeals): escalate.,,,,ESCALATE

@@ -106,3 +106,17 @@ def test_escalation_log_adds_and_resolves(tmp_path):
     resolved = [e for e in log.all() if e["id"] == first["id"]][0]
     assert resolved["status"] == "resolved" and resolved["note"] == "replied by email"
     assert not log.resolve("NOPE")
+
+
+def test_model_signal_parses_scores():
+    from eval.model_signal import parse_score
+    assert parse_score("85") == 85
+    assert parse_score("Score: 0") == 0
+    assert parse_score("150") is None and parse_score("unsure") is None
+
+
+def test_label_evidence_number_matching():
+    from eval.label_evidence import norm, numbers
+    assert numbers("RM24,200 per semester, plus 6% SST") == ["6", "24200"]
+    assert numbers("Ten working days") == ["10"]
+    assert "5 working days" in norm("five working days")

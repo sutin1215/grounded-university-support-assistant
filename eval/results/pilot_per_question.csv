@@ -19,6 +19,10 @@ Q17,bm25,4,1,Fees-and-payment-guide-Malaysia.pdf p18
 Q18,bm25,5,1,Fees-and-payment-guide-Malaysia.pdf p9
 Q19,bm25,,1,Fees-and-payment-guide-Malaysia.pdf p17
 Q20,bm25,1,1,Fees-and-payment-guide-Malaysia.pdf p18
+P01,bm25,2,1,Fees-and-payment-guide-Malaysia.pdf p17
+P02,bm25,1,1,ltbp-submission-coursework.pdf p1
+P03,bm25,1,1,hapsug.pdf p1
+P04,bm25,,1,mc-procedure.pdf p2
 Q01,bm25_stem,2,1,mc-procedure.pdf p4
 Q02,bm25_stem,1,1,ltbp-submission-coursework.pdf p1
 Q03,bm25_stem,2,1,Fees-and-payment-guide-Malaysia.pdf p3
@@ -39,6 +43,10 @@ Q17,bm25_stem,3,1,Fees-and-payment-guide-Malaysia.pdf p17
 Q18,bm25_stem,2,1,Fees-and-payment-guide-Malaysia.pdf p18
 Q19,bm25_stem,5,1,Fees-and-payment-guide-Malaysia.pdf p17
 Q20,bm25_stem,1,1,Fees-and-payment-guide-Malaysia.pdf p18
+P01,bm25_stem,2,1,Fees-and-payment-guide-Malaysia.pdf p17
+P02,bm25_stem,1,1,ltbp-submission-coursework.pdf p1
+P03,bm25_stem,1,1,hapsug.pdf p1
+P04,bm25_stem,,1,Fees-and-payment-guide-Malaysia.pdf p14
 Q01,tfidf,2,1,mc-procedure.pdf p4
 Q02,tfidf,1,1,ltbp-submission-coursework.pdf p1
 Q03,tfidf,,0,Fee-International.pdf p1
@@ -59,6 +67,10 @@ Q17,tfidf,4,1,Fees-and-payment-guide-Malaysia.pdf p9
 Q18,tfidf,,1,Fees-and-payment-guide-Malaysia.pdf p18
 Q19,tfidf,5,1,Fees-and-payment-guide-Malaysia.pdf p9
 Q20,tfidf,1,1,Fees-and-payment-guide-Malaysia.pdf p18
+P01,tfidf,3,1,Fees-and-payment-guide-Malaysia.pdf p17
+P02,tfidf,1,1,ltbp-submission-coursework.pdf p1
+P03,tfidf,1,1,hapsug.pdf p1
+P04,tfidf,,1,mc-procedure.pdf p2
 Q01,dense,1,1,ltbp-submission-coursework.pdf p1
 Q02,dense,1,1,ltbp-submission-coursework.pdf p1
 Q03,dense,1,1,ltbp-submission-coursework.pdf p1
@@ -79,6 +91,10 @@ Q17,dense,,1,Fees-and-payment-guide-Malaysia.pdf p17
 Q18,dense,,1,Fees-and-payment-guide-Malaysia.pdf p18
 Q19,dense,2,1,Fees-and-payment-guide-Malaysia.pdf p9
 Q20,dense,3,1,Fees-and-payment-guide-Malaysia.pdf p16
+P01,dense,1,1,ltbp-submission-coursework.pdf p1
+P02,dense,1,1,ltbp-submission-coursework.pdf p1
+P03,dense,1,1,hapsug.pdf p1
+P04,dense,,1,mc-procedure.pdf p2
 Q01,hybrid,1,1,ltbp-submission-coursework.pdf p1
 Q02,hybrid,1,1,ltbp-submission-coursework.pdf p1
 Q03,hybrid,1,1,ltbp-submission-coursework.pdf p1
@@ -99,6 +115,10 @@ Q17,hybrid,5,1,Fees-and-payment-guide-Malaysia.pdf p17
 Q18,hybrid,,1,Fees-and-payment-guide-Malaysia.pdf p18
 Q19,hybrid,5,1,Fees-and-payment-guide-Malaysia.pdf p17
 Q20,hybrid,1,1,Fees-and-payment-guide-Malaysia.pdf p18
+P01,hybrid,1,1,ltbp-submission-coursework.pdf p1
+P02,hybrid,1,1,ltbp-submission-coursework.pdf p1
+P03,hybrid,1,1,hapsug.pdf p1
+P04,hybrid,,1,mc-procedure.pdf p2
 Q01,S1_faq,,,F01 (sim 0.61)
 Q02,S1_faq,,,F02 (sim 0.57)
 Q03,S1_faq,,,ESCALATE (sim 0.00)
@@ -125,3 +145,9 @@ U03,S1_faq,,,F10 (sim 0.35)
 U04,S1_faq,,,ESCALATE (sim 0.00)
 U05,S1_faq,,,ESCALATE (sim 0.00)
 U06,S1_faq,,,ESCALATE (sim 0.00)
+P01,S1_faq,,,F10 (sim 0.37)
+P02,S1_faq,,,F03 (sim 0.41)
+P03,S1_faq,,,F06 (sim 0.39)
+P04,S1_faq,,,ESCALATE (sim 0.00)
+N01,S1_faq,,,ESCALATE (sim 0.00)
+N02,S1_faq,,,F04 (sim 0.60)

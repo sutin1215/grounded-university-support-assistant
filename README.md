@@ -33,7 +33,11 @@ python -m eval.run_pilot          # retrieval comparison (5 methods) + S1 baseli
 python -m eval.run_systems        # S1, S2, S3 answers for all pilot questions (cached)
 python -m eval.judge              # LLM judge labels
 python -m eval.score_systems      # results table: eval/results/pilot_systems_summary.md
-python -m eval.confidence_pilot   # S4 pilot: retrieval scores as an escalation signal
+python -m eval.model_signal       # S4 pilot: LLM "are these passages enough?" score (cached)
+python -m eval.confidence_pilot   # S4 pilot: retrieval and model signals (AUROC with bootstrap CI)
+python -m eval.label_evidence     # evidence for checking the reference labels (no LLM)
+python -m eval.plot_signals       # D1 figure: d1/images/signal_plot.tex
+python -m eval.cost_projection    # cost projection for the Semester 2 evaluation
 python -m src.demo                # demo: S1 vs search with citations
 python -m src.systems S3 "How many times can I resit a course?"
 python -m pytest -q

@@ -43,7 +43,7 @@ def main():
              f"{n_ans} answerable and {n_un} unanswerable questions; 5 official documents; "
              f"LLM {cfg['llm']['model']} (temperature {cfg['llm']['temperature']}); "
              f"S3 retrieves the top {cfg['retrieval']['top_k']} passages with {cfg['retrieval']['s3_method']} search. "
-             "Labels are manual; see the agreement section for the LLM judge.", "",
+             "Reference labels are in eval/labels/pilot_manual_labels.csv (status in its labelled_by column); see the agreement section for the LLM judge.", "",
              "| System | Correct | Partial | Wrong | Escalated (answerable) | Declined (unanswerable) | Answered (unanswerable) |",
              "|---|---|---|---|---|---|---|"]
     per_system = {}
@@ -53,6 +53,14 @@ def main():
         per_system[s] = lab
         lines.append(f"| {s} | {lab['CORRECT']}/{n_ans} | {lab['PARTIAL']}/{n_ans} | {lab['WRONG']}/{n_ans} | "
                      f"{lab['ESCALATED']}/{n_ans} | {lab['DECLINED']}/{n_un} | {lab['ANSWERED']}/{n_un} |")
+
+    # Paraphrased and near-miss questions added on 11 Nov 2026 (qids P.. and N..), reported separately
+    hard = sorted({a["qid"] for a in answers if a["qid"][0] in "PN"})
+    if hard:
+        lines += ["", f"## Paraphrased and near-miss questions ({', '.join(hard)})", "",
+                  "| System | " + " | ".join(hard) + " |", "|---|" + "---|" * len(hard)]
+        for s in systems:
+            lines.append(f"| {s} | " + " | ".join(manual[(q, s)]["label"] for q in hard) + " |")
 
     # Citations (S3): does an answered, answerable question cite the gold document and page?
     s3 = [a for a in answers if a["system"] == "S3" and a["answerable"] == "yes" and not a["abstained"]]
@@ -95,7 +103,7 @@ def main():
         if disagreements:
             lines.append("- Disagreements: " + ", ".join(f"{q}/{s} (manual {manual[(q, s)]['label']}, "
                                                            f"judge {judge[(q, s)]['judge_label']})" for q, s in disagreements))
-    lines += ["", "Pilot set only (26 questions): indicative, not final results."]
+    lines += ["", f"Pilot set only ({n_ans + n_un} questions): indicative, not final results."]
     (res / "pilot_systems_summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
 

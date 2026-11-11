@@ -104,3 +104,15 @@ How these were checked: authors, title, venue, pages and DOI were read from the 
 - Personal Data Protection Act 2010 (Act 709), Malaysia, amended by the Personal Data Protection (Amendment) Act 2024
   (in force in phases from 1 Jan to 1 Jun 2025; checked in a Data Protection Report summary).
 - Copyright Act 1987 (Act 332), Malaysia (WIPO Lex record).
+
+## Added 11 Nov 2026 (D1 final pass)
+
+- Lee and See 2004, *Trust in Automation: Designing for Appropriate Reliance*, Human Factors 46(1), 50-80,
+  doi:10.1518/hfes.46.1.50_30392. Authors, title, volume, issue, pages and DOI confirmed in Crossref (11 Nov 2026).
+  Used for RQ4: appropriate reliance, not maximum trust, is the goal.
+- Glikson and Woolley 2020, *Human Trust in Artificial Intelligence: Review of Empirical Research*, Academy of
+  Management Annals 14(2), 627-660, doi:10.5465/annals.2018.0057. Confirmed in Crossref (11 Nov 2026). Used for RQ4.
+- Google, *Gemini API Additional Terms of Service*, effective 23 March 2026, https://aistudio.google.com/docs/terms
+  (read 11 Nov 2026). Paid services: prompts and responses are not used to improve Google's products; they are logged
+  "for a limited period of time" (no number of days stated) for abuse detection and legal disclosures, and may be
+  stored transiently in any country where Google has facilities.

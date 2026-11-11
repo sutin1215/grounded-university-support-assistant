@@ -46,3 +46,17 @@ judge_user: |-
   Reply in this format:
   LABEL: <label>
   REASON: <one sentence>
+
+# S4 model signal (pilot): does the evidence suffice? The model must not answer the question itself.
+signal_system: >-
+  You check whether numbered passages from official university documents contain enough information
+  to answer a student's question. Do not answer the question.
+
+signal_user: |-
+  Passages:
+  {passages}
+
+  Question: {question}
+
+  How likely is it that these passages contain enough information to answer the question fully and correctly?
+  Reply with one whole number from 0 (certainly not) to 100 (certainly yes) and nothing else.
