@@ -12,24 +12,24 @@
       \node[align=center,below] at (0,-0.5) {#3};
       \coordinate (#1) at (0,0.1);
     \end{scope}}
-  \draw[rounded corners,gray] (1.6,-5.65) rectangle (11.4,2.95);
-  \node[font=\sffamily\bfseries] at (6.45,2.65) {Student Support Assistant};
+  \draw[rounded corners,gray] (1.6,-6.35) rectangle (12.0,2.95);
+  \node[font=\sffamily\bfseries] at (6.8,2.65) {Student Support Assistant};
   % student side
   \node[uc] (ask) at (4,1.6) {Ask a question};
-  \node[uc] (view) at (4,-1.5) {View answer\\with citations};
-  \node[uc] (open) at (4,-3.6) {Open cited\\document page};
-  \node[uc] (ref) at (4,0.0) {Be referred to\\Student Services};
+  \node[uc] (view) at (4,-1.9) {View answer\\with citations};
+  \node[uc] (open) at (4,-4.2) {Open cited\\document page};
+  \node[uc] (ref) at (4,-0.1) {Be referred to\\Student Services};
   % system and staff side
-  \node[uc] (gen) at (9.0,1.6) {Retrieve passages and\\generate answer};
-  \node[uc] (esc) at (9.0,0.1) {View escalated\\questions};
-  \node[uc] (res) at (9.0,-1.5) {Resolve an\\escalation};
-  \node[uc] (upd) at (9.0,-2.75) {Update document\\snapshot};
-  \node[uc] (cfg) at (9.0,-3.85) {Configure system\\and thresholds};
-  \node[uc] (run) at (9.0,-4.95) {Run evaluation};
-  \actor{stu}{0,-0.5}{Student}
-  \actor{llm}{13,1.4}{Gemini API\\(external)}
-  \actor{stf}{13,-0.9}{Student Services\\staff}
-  \actor{mnt}{13,-4.0}{Maintainer\\(developer)}
+  \node[uc] (gen) at (9.6,1.6) {Retrieve passages and\\generate answer};
+  \node[uc] (esc) at (9.6,0.1) {View escalated\\questions};
+  \node[uc] (res) at (9.6,-1.75) {Resolve an\\escalation};
+  \node[uc] (upd) at (9.6,-3.1) {Update document\\snapshot};
+  \node[uc] (cfg) at (9.6,-4.35) {Configure system\\and thresholds};
+  \node[uc] (run) at (9.6,-5.6) {Run evaluation};
+  \actor{stu}{0,-0.9}{Student}
+  \actor{llm}{13.8,1.4}{Gemini API\\(external)}
+  \actor{stf}{13.8,-1.0}{Student Services\\staff}
+  \actor{mnt}{13.8,-4.6}{Maintainer\\(developer)}
   \draw (stu)--(ask.west); \draw (stu)--(view.west); \draw (stu)--(ref.west);
   \draw (gen.east)--(llm);
   \draw (esc.east)--(stf); \draw (res.east)--(stf);

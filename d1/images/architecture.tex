@@ -13,7 +13,7 @@
   \node[box,right=of docs] (ing) {Ingestion: text, 220-word passages + doc, page, version};
   \node[box,right=of ing] (kb) {Knowledge base: passages, BM25 index, embeddings};
   % online
-  \node[box,below=1.15cm of docs] (ui) {Web interface: student question};
+  \node[box,below=1.5cm of docs] (ui) {Web interface: student question};
   \node[box,right=of ui] (ret) {Hybrid retriever: BM25 + dense, RRF, top-$k$};
   \node[box,right=of ret] (gen) {Answer generator (Gemini): passages only, [n] citations or NOT\_FOUND};
   \node[s4,right=of gen] (conf) {Confidence check (S4): retrieval, evidence and model signals};

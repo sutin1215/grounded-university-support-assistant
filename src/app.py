@@ -134,10 +134,12 @@ def student_view(system_name):
 
     history = st.session_state.setdefault("history", [])
     sources = load_sources()
+    examples = st.empty()  # cleared as soon as the first question is asked
     if not history and "pending" not in st.session_state:
-        st.markdown('<p class="try">Try asking</p>', unsafe_allow_html=True)
-        for q in EXAMPLES:
-            st.button(q, on_click=st.session_state.__setitem__, args=("pending", q))
+        with examples.container():
+            st.markdown('<p class="try">Try asking</p>', unsafe_allow_html=True)
+            for q in EXAMPLES:
+                st.button(q, on_click=st.session_state.__setitem__, args=("pending", q))
 
     for item in history:
         st.markdown(f'<p class="asked">{html.escape(item["question"])}</p>', unsafe_allow_html=True)
@@ -146,6 +148,7 @@ def student_view(system_name):
     question = st.chat_input("Ask a question about fees, deadlines or assessment rules")
     question = question or st.session_state.pop("pending", None)
     if question:
+        examples.empty()
         st.markdown(f'<p class="asked">{html.escape(question)}</p>', unsafe_allow_html=True)
         with st.spinner("Searching the official documents..."):
             out = ask(question, system_name)

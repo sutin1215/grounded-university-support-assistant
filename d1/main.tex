@@ -72,7 +72,7 @@ This project builds and evaluates a student support assistant for Heriot-Watt Un
 
 \subsection{Problem Statement} \label{sec:intro_problem}
 
-HWUM students need accurate answers to practical questions about fees, coursework deadlines, late submission and mitigating circumstances, but the answers are spread across many official sources. An audit for this project found 23 official web pages and PDFs on five main topics, published by at least five university offices and mixing rules for all Heriot-Watt campuses with Malaysia-only rules; six outdated versions were still online (Section~\ref{sec:feas_docs}). Students must search several places, risk reading an old version, or wait for staff to reply.
+HWUM students need accurate answers to practical questions about fees, coursework deadlines, late submission and mitigating circumstances, but the answers are spread across many official sources. An audit for this project found 23 official web pages and PDFs, mostly on five topics, published by at least five university offices and mixing rules for all Heriot-Watt campuses with Malaysia-only rules; six outdated versions were still online (Section~\ref{sec:feas_docs}). Students must search several places, risk reading an old version, or wait for staff to reply.
 
 General-purpose chatbots are not a safe shortcut, because they answer from their training data rather than from HWUM's current documents. In this project's pilot, a plain LLM answered only 8 of 24 HWUM questions fully correctly and answered 6 of 8 questions that it should have declined (Section~\ref{sec:feas_pilot}). For a fee, a deadline or a penalty, a confident wrong answer can cost a student money or marks. The problem is therefore how to give HWUM students quick answers that are grounded in current official documents, show where they come from, and are passed to staff when the evidence is weak.
 
@@ -98,7 +98,7 @@ The main problems to solve are keeping answers within the retrieved evidence, de
 
 \subsection{Scope and Limitations} \label{sec:intro_scope}
 
-The project covers questions from HWUM students about fees and payment, coursework deadlines and late submission, mitigating circumstances, assessment and progression, and academic regulations. Answers come only from public, official Heriot-Watt and HWUM documents in English, frozen as a dated snapshot, and the assistant either gives a general factual answer with citations or escalates to Student Services. Out of scope are sensitive or personal matters (such as mental health, personal financial hardship, medical issues, appeals and disciplinary cases), scholarships and financial aid (the audit found only one official page), advice on an individual student's case, personal data and student records, acting on the student's behalf, other universities and campuses, languages other than English, training or fine-tuning a model, and live deployment.
+The project covers questions from HWUM students about fees and payment, coursework deadlines and late submission, mitigating circumstances, assessment and progression, and academic regulations. Answers come only from public, official Heriot-Watt and HWUM documents in English, frozen as a dated snapshot, and the assistant either gives a general factual answer with citations or escalates to Student Services. This project does not involve sensitive or personal matters (such as mental health, personal financial hardship, medical issues, appeals and disciplinary cases), scholarships and financial aid (the audit found only one official page), advice on an individual student's case, personal data or student records, acting on the student's behalf, other universities and campuses, languages other than English, training or fine-tuning a model, or live deployment; the related ethical and legal issues are discussed in Appendix~\ref{sec:app_ples}.
 
 The main limitations are that answers are only as current as the document snapshot, only one LLM family (Gemini) is evaluated, the test questions are written by the author rather than by students, and escalation is simulated rather than connected to a real staff inbox.
 
@@ -164,22 +164,22 @@ Three patterns stand out. Most systems serve admissions, whereas current student
 
 \subsection{Technology Review} \label{sec:back_tech}
 
-Table~\ref{tab:tech} compares the main options for each component; the pilot evidence behind the choices is in Section~\ref{sec:feas_pilot}.
+Each component was chosen against four criteria taken from the requirements: low cost (NF5), running on a CPU-only laptop (NF3), keeping every setting visible and reproducible (F4, NF2), and evidence from the literature or the pilot that it works for this task. Table~\ref{tab:tech} gives the choice for each component, the evidence behind it and why the alternatives were rejected; the pilot numbers are reported in Section~\ref{sec:feas_pilot}.
 
 \begin{table}[H]
-\caption{Technology options considered; the chosen option is in bold.}
+\caption{Technology choices: the option chosen for each component, the evidence for it, and the alternatives rejected.}
 \label{tab:tech}
 \footnotesize
-\begin{tabular}{L{0.15\linewidth}L{0.34\linewidth}L{0.43\linewidth}}
+\begin{tabular}{L{0.11\linewidth}L{0.16\linewidth}L{0.36\linewidth}L{0.27\linewidth}}
 \toprule
-Component & Options & Reason for the choice \\
+Component & Chosen & Evidence for the choice & Alternatives rejected \\
 \midrule
-LLM & \textbf{Gemini 3.6 Flash (API)}; other hosted APIs (OpenAI, Anthropic); local open model such as Llama~3 8B \cite{grattafiori2024llama3} & The supervisor allowed any provider. Gemini is low-cost (US\$0.75 and US\$3.75 per million input and output tokens \cite{google2026pricing}), and its paid tier does not use prompts to improve Google's products \cite{google2026terms}; a pinned version keeps runs comparable. A local model is free but too slow on a CPU-only laptop (NF3, NF4). \\
-Lexical search & TF-IDF; BM25; \textbf{BM25 with stemming} & Best lexical method in the pilot; stemming matches ``extension'' with ``extensions''. \\
-Dense search & \textbf{bge-small-en-v1.5} \cite{xiao2024cpack}; larger or hosted models & Runs on a laptop CPU with no API cost. \\
-Combining & Weighted score sum; \textbf{reciprocal rank fusion} \cite{cormack2009reciprocal} & Uses rankings only, so no weights to tune. \\
-Pipeline & LangChain or LlamaIndex; \textbf{plain Python} & Frameworks hide prompts and defaults; plain Python keeps every setting in configuration (F4). \\
-Interface & Flask with HTML; Gradio \cite{abid2019gradio}; \textbf{Streamlit} \cite{streamlit2026chat} & Pure Python, with chat elements and a staff page built in. \\
+LLM & Gemini 3.6 Flash, pinned version & US\$0.75 and US\$3.75 per million input and output tokens \cite{google2026pricing}; whole pilot US\$0.37; paid-tier prompts not used to improve Google's products \cite{google2026terms} & Local Llama~3 8B \cite{grattafiori2024llama3}: too slow on a CPU laptop (NF3, NF4). Other hosted APIs: viable, but systems, not models, are compared \\
+Lexical search & BM25 with stemming \cite{robertson2009bm25} & Best lexical method in the pilot (MRR 0.72, against 0.68 for BM25 and 0.61 for TF-IDF) & TF-IDF, plain BM25: lower MRR; miss other word forms \\
+Dense search & bge-small-en-v1.5 \cite{xiao2024cpack} & Runs on a laptop CPU at no cost; found two gold passages that BM25 missed & Larger BGE models: slower on a CPU. Hosted embeddings: cost, second provider \\
+Combining & Reciprocal rank fusion \cite{cormack2009reciprocal} & Best in the pilot (hit@1 0.71, MRR 0.78); uses ranks only, so nothing to tune & Weighted score sum: needs normalised scores and a tuned weight \\
+Pipeline & Plain Python, YAML settings & Every prompt and setting in configuration (F4); every LLM call cached (NF2) & LangChain, LlamaIndex: hide default prompts; exact reruns harder \\
+Interface & Streamlit \cite{streamlit2026chat} & Pure Python with chat elements; prototype with staff view built in about a week & Flask: separate front end. Gradio \cite{abid2019gradio}: aimed at model demos \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -188,13 +188,13 @@ Interface & Flask with HTML; Gradio \cite{abid2019gradio}; \textbf{Streamlit} \c
 
 In summary, RAG can ground answers in documents, but grounding and citation do not remove hallucination, deciding when not to answer is a separate and hard problem, and evaluations must include unanswerable questions. Three gaps follow:
 \begin{description}
-  \item[G1] Few studies compare the main approaches (an FAQ baseline, a plain LLM and RAG) on the same university documents and questions.
+  \item[G1] Few studies compare an FAQ baseline, a plain LLM and RAG on the same questions.
   \item[G2] Retrieval choices are usually fixed rather than tested on university documents.
-  \item[G3] Declining is left to the prompt or replaced by a fallback; it is not linked to escalation to staff or measured as its own component.
+  \item[G3] Declining is left to the prompt or a fallback, not measured as escalation.
 \end{description}
 These gaps lead to four research questions:
 \begin{description}
-  \item[RQ1] How much more accurate and faithful is RAG than an FAQ baseline and a plain LLM on HWUM questions? (G1)
+  \item[RQ1] How do RAG, an FAQ baseline and a plain LLM compare in correctness, faithfulness and declining unanswerable HWUM questions? (G1)
   \item[RQ2] Which retrieval choices (passage size, number of passages, and lexical, dense or hybrid search) matter most? (G2)
   \item[RQ3] Does confidence-based escalation reduce wrong answers, and how many answerable questions does it wrongly escalate? (G3)
   \item[RQ4] Do students find the assistant usable, and does it support appropriate rather than blind trust \cite{lee2004trust, glikson2020trust}? (ethics approved)
@@ -204,36 +204,38 @@ These gaps lead to four research questions:
 %%%%%%%%%%%%%%%%%%%%
 \section{Methodology} \label{cha:method}
 
-This section describes the development approach and plan, the requirements, the system design and the evaluation plan, and how each links to the objectives (Section~\ref{sec:intro_aim}) and research questions (Section~\ref{sec:back_gap}).
+This section covers the development approach, plan, requirements, design and evaluation.
 
 \subsection{Development Approach} \label{sec:method_approach}
 
-Development follows an iterative, agile approach adapted from Scrum \cite{schwaber2020scrum} for a single developer. Work is planned in one-week sprints that end at the weekly supervisor meeting, which acts as the sprint review, with tasks kept on a Notion board. Each sprint that changes a system ends with a run on the development questions and an error analysis, so the next decision is based on evidence; in the pilot, this showed that hybrid search worked best. A waterfall plan was rejected because the retrieval settings and the design of S4 depend on results that cannot be known in advance. Experiments change one factor at a time, and settings live in configuration files with every LLM response cached, so results can be traced and reproduced (NF2).
+Development follows an iterative, agile approach adapted from Scrum \cite{schwaber2020scrum} for a single developer. Work is planned in one-week sprints that end at the weekly supervisor meeting, which acts as the sprint review. Each sprint that changes a system ends with a run on the development questions and an error analysis, so the next decision is based on evidence; in the pilot, this showed that hybrid search worked best. A waterfall plan was rejected because the retrieval settings and the design of S4 depend on results that cannot be known in advance; experiments change one factor at a time (NF2).
 
 \subsection{Development Plan} \label{sec:method_plan}
 
-Table~\ref{tab:plan} shows the five stages of the project; the weekly schedule is in the Gantt chart (Appendix~\ref{sec:app_gantt}). December is exam season, so Stage 2 starts after the exams with the knowledge base and the 60 development questions; the 140 test questions follow in Weeks 1 to 3. Weeks 9 and 10 have no experiments, as a buffer. The usability study (E4) was approved by ethics in November 2026 and runs in Weeks 6 to 8, once S4 is in the interface.
+Table~\ref{tab:plan} shows the five stages; the weekly schedule is in the Gantt chart (Appendix~\ref{sec:app_gantt}). Stage 2 starts after the December exams with the knowledge base and 60 development questions; the 140 test questions follow in Weeks 1 to 3, and Weeks 9 and 10 are a buffer.
 
 \begin{table}[H]
-\caption{Development plan (S1, S2: Semesters 1 and 2; W: teaching week).}
+\caption{Development plan; each stage needs the one before (S1, S2: semester; W: teaching week).}
 \label{tab:plan}
 \footnotesize
-\begin{tabular}{L{0.22\linewidth}L{0.15\linewidth}L{0.38\linewidth}L{0.15\linewidth}}
+\begin{tabular}{L{0.22\linewidth}L{0.14\linewidth}L{0.56\linewidth}}
 \toprule
-Stage & When & Main tasks & Depends on \\
+Stage & When & Main tasks \\
 \midrule
-1. Preparation (done) & S1 W1--11 & Literature, document audit, ethics, pilot, interface prototype & -- \\
-2. Data & Break (after exams)--S2 W3 & Full knowledge base; write and label about 200 questions & Stage 1 \\
-3. Retrieval and S4 & S2 W3--5 & Retrieval experiments; build and tune S4 on the development set & Stage 2 \\
-4. Final evaluation & S2 W5--8 & One run on the test set; S4 in the interface; usability study E4 & Stage 3 \\
-5. Analysis and writing & S2 W6--11 & Statistics, error analysis, dissertation (due Week 11) & Stage 4 \\
+1. Preparation (done) & S1 W1--11 & Literature, document audit, ethics, pilot, interface prototype \\
+2. Data & Break--S2 W3 & Full knowledge base; write and label about 200 questions \\
+3. Retrieval and S4 & S2 W3--5 & Retrieval experiments; build and tune S4 (development set) \\
+4. Final evaluation & S2 W5--8 & One run on the test set; S4 in the interface; usability study E4 \\
+5. Analysis, writing & S2 W6--11 & Statistics, error analysis, dissertation (due Week 11) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
+Progress is tracked weekly on a Notion board, and all code, prompts, pilot results and meeting records are kept in a GitHub repository; both are shared with the supervisor, and their links are in Appendix~\ref{sec:app_gantt}.
+
 \subsection{Requirements} \label{sec:method_req}
 
-Table~\ref{tab:req} lists the functional (F) and non-functional (NF) requirements, prioritised with MoSCoW and linked to the objectives. They were derived from the supervisor's brief, the document audit (F1, F7), gaps G1 to G3 (F2 to F5) and the pilot failures, such as the confident wrong answers behind F3. The \emph{Must} requirements are the core needed to answer RQ1 to RQ3.
+Table~\ref{tab:req} lists the functional (F) and non-functional (NF) requirements, prioritised with MoSCoW and linked to the objectives. They were derived from the supervisor's brief, the document audit (F1, F7), gaps G1 to G3 (F2 to F5) and the pilot failures, such as the confident wrong answers behind F3. The \emph{Must} requirements are the core needed to answer RQ1 to RQ3. No stakeholder study was run in Semester 1: the test questions cover each topic in proportion to the document audit, and students' views of the interface are collected in E4 (F8).
 
 \begin{table}[H]
 \caption{Requirements with MoSCoW priority and the objective each supports.}
@@ -245,7 +247,7 @@ ID & Requirement & Priority & Obj. \\
 \midrule
 F1 & Ingest documents into passages that keep document, page and version. & Must & O2 \\
 F2 & Answer with citations to the supporting document and page. & Must & O3 \\
-F3 & Escalate low-confidence questions to the relevant office. & Must & O3 \\
+F3 & Escalate low-confidence questions to Student Services. & Must & O3 \\
 F4 & Run any of the four systems from configuration, without code changes. & Must & O3 \\
 F5 & Run the evaluation automatically and log every answer, source and score. & Must & O4 \\
 F6 & Web interface showing answers, sources and escalations, with a staff view. & Should & O5 \\
@@ -284,7 +286,7 @@ Figure~\ref{fig:usecase} shows the use cases. A \emph{student} asks a question, 
 
 \begin{figure}[H]
 \centering
-\resizebox{0.66\linewidth}{!}{\input{images/use_case}}
+\resizebox{0.6\linewidth}{!}{\input{images/use_case}}
 \caption{Use case diagram.}
 \label{fig:usecase}
 \end{figure}
@@ -302,19 +304,35 @@ A working prototype of the interface, called AskWatt, was built with Streamlit a
 
 \subsection{Evaluation Plan} \label{sec:method_eval}
 
-\textbf{Test set.} About 200 questions written from the documents, including paraphrases, questions affected by outdated document versions, and about 40 that the documents cannot answer, written using the categories of \citet{peng2025unanswerability}. Each answerable question has a gold answer and supporting quote. About 60 questions are used for all tuning (development set) and the other 140 only once, for the final results (test set).
+\textbf{Test set.} About 200 questions written from the documents, including paraphrases, questions affected by outdated document versions, and about 40 that the documents cannot answer, written using the categories of \citet{peng2025unanswerability}. Each answerable question has a gold answer and supporting quote. About 60 questions are used for all tuning (development set) and the other 140 only once, for the final results (test set); the 32 pilot questions are kept out of the test set. Because I write both the questions and the labels, a second person will rewrite about 20 questions in their own words without seeing the documents, as a check that the results do not depend on document wording.
 
-\textbf{Experiments and metrics.} E1 compares S1, S2 and S3 (RQ1); E2 changes one retrieval choice at a time in S3 (RQ2); E3 compares the confidence signals and thresholds of S4 (RQ3); and E4, approved by ethics in November 2026, asks 10 to 15 HWUM students in Semester 2 Weeks 6 to 8, once S4 is in the interface, to try it and complete the System Usability Scale (SUS) \cite{brooke1996sus} and trust items (RQ4). The main measures are correctness, faithfulness, citation accuracy, retrieval hit rate, the share of wrong and wrongly escalated answers, latency and cost. Answers are labelled by hand on the development set and by an LLM judge on the rest, but only if the judge agrees with my labels (Cohen's $\kappa \geq 0.6$).
+\textbf{Experiments and metrics.} Table~\ref{tab:eval} links each research question to its experiment; E4, approved by ethics in November 2026, runs in Semester 2 Weeks 6 to 8, once S4 is in the interface, using the information sheet, consent form and questionnaire in Appendices~\ref{sec:app_forms} and~\ref{sec:app_questionnaire}. An answer is \emph{correct} if it matches the gold answer, \emph{partial} if it is right but incomplete, and \emph{wrong} otherwise; it is \emph{faithful} if every claim is supported by the retrieved passages, and a citation is \emph{accurate} if the cited passage supports the sentence it is attached to. A \emph{wrong escalation} is an answerable question that S4 passes to staff. Answers are labelled by hand on the development set and by an LLM judge on the test set, but only if the judge agrees with my labels (Cohen's $\kappa \geq 0.6$).
 
-\textbf{Analysis.} Because all systems answer the same questions, comparisons use paired tests (McNemar's test for correct and wrong answers), with Holm's correction for the several comparisons in each experiment and bootstrap confidence intervals \cite{dror2018hitchhiker}. Every failure is given a category, such as a retrieval miss, an unsupported claim or a missed escalation, so the results explain why systems fail, not only how often.
+\begin{table}[H]
+\caption{Evaluation design: the experiment, factor and measures for each research question.}
+\label{tab:eval}
+\footnotesize
+\begin{tabular}{L{0.06\linewidth}L{0.24\linewidth}L{0.36\linewidth}L{0.24\linewidth}}
+\toprule
+RQ & Experiment and data & Main measures & Analysis \\
+\midrule
+RQ1 & E1: S1, S2 and S3 on the test set & Correct, partial and wrong answers; faithfulness; citation accuracy; unanswerable questions declined; latency and cost & McNemar's test with Holm's correction; bootstrap 95\% intervals \\
+RQ2 & E2: one retrieval choice changed at a time in S3 (passage size, $k$, lexical, dense or hybrid); development set & Hit@1, hit@5 and MRR for every setting; correctness for the best settings & Bootstrap intervals; the best setting is fixed before E1 \\
+RQ3 & E3: retrieval, evidence and model signals and their thresholds in S4; tuned on the development set, run once on the test set & AUROC of each signal; risk--coverage curve; wrong answers and wrong escalations, S4 against S3 & Bootstrap intervals; McNemar's test, S4 against S3 \\
+RQ4 & E4: 10 to 15 HWUM students use the interface with prepared questions & System Usability Scale (SUS) \cite{brooke1996sus}; trust items; questions completed & Descriptive statistics; small sample stated \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Analysis.} Because all systems answer the same questions, comparisons are paired (Table~\ref{tab:eval}), with Holm's correction for several comparisons and bootstrap confidence intervals \cite{dror2018hitchhiker}. The development set holds only about 12 unanswerable questions, so S4 uses one threshold per signal rather than a learned combination, and the uncertainty of each threshold is reported. Every failure is given a category, such as a retrieval miss, an unsupported claim or a missed escalation, so the results explain why systems fail, not only how often.
 
 \subsection{Success Criteria} \label{sec:method_success}
 
-The criteria were set from the pilot and the literature and are measured on the test set:
+The criteria were set from the pilot and the literature; SC1 to SC5 are measured on the test set and SC6 in E4:
 \begin{description}
   \item[SC1] S3 is correct on at least 80\% of answerable test questions, at least 20 percentage points more than S2, and significantly more often correct than S1 and S2 (McNemar, Holm-corrected $p < 0.05$). Significance alone is easy with 140 questions, so the target and gap carry the claim; 80\% allows for a harder set than the pilot and is below the 90\% reported for an admissions RAG system \cite{chen2024admission}.
   \item[SC2] At least 85\% of S3's citations support the answer; open-domain systems reach about half \cite{liu2023verifiability}, and a small, closed knowledge base should do better.
-  \item[SC3] S4 at least halves the share of wrong answers compared with S3 while wrongly escalating no more than 20\% of answerable questions, since a wrong answer about a fee or penalty costs a student more than a short wait for staff.
+  \item[SC3] S4 at least halves the share of wrong answers compared with S3 while wrongly escalating no more than 20\% of answerable questions, since a wrong answer about a fee or penalty costs a student more than a short wait for staff. S3 made no wrong answers in the pilot, so the test set adds near-miss and outdated-version questions where it is expected to fail; if S3 still makes fewer than ten wrong answers, a ratio is not meaningful and SC3 is judged on the risk--coverage curve instead (lower risk than S3 at 80\% coverage).
   \item[SC4] The best search setting finds the right passage in the top five for at least 90\% of answerable questions.
   \item[SC5] The median response time is 10 seconds or less and the total API cost is below RM100.
   \item[SC6] In E4, the mean SUS score is at least 68, at least matching the 67.75 reported for BarkPlug \cite{neupane2024barkplug}.
@@ -334,7 +352,7 @@ An audit in Weeks 4 and 5 found 27 sources. The 23 official ones come from at le
 
 \textbf{Retrieval.} Table~\ref{tab:pilot_ret} compares the five retrievers on the 24 answerable questions. Hybrid retrieval was best (hit@1 0.71, MRR 0.78) and tied with stemmed BM25 on hit@5 (0.92). The lexical and dense methods failed on different questions (dense search missed three gold passages that BM25 found, and BM25 missed two that dense search found), so combining them helped, consistent with BEIR \cite{thakur2021beir}. Stemming raised BM25's MRR from 0.68 to 0.72. S3 therefore uses hybrid retrieval with five passages.
 
-\begin{table}[tbp]
+\begin{table}[H]
 \caption{Retrieval pilot on 24 answerable questions (top five passages).}
 \label{tab:pilot_ret}
 \footnotesize
@@ -351,9 +369,9 @@ Dense (bge-small) & 0.62 & 0.83 & 0.72 \\
 \end{tabular}
 \end{table}
 
-\textbf{Systems.} Table~\ref{tab:pilot_sys} compares S1 to S3. S3 answered all 24 answerable questions correctly, including the four paraphrases, cited a source every time (20 of 24 on the gold page) and declined all 8 unanswerable questions, including both near-misses. S2 was fully correct on only 8 and answered 6 of the 8 questions it should have declined, for example inventing a monthly late-payment charge and an appeal deadline that no document contains: the hallucination problem of Section~\ref{sec:back_halluc}. S1 returned the wrong FAQ answer confidently when a question shared its words (10 wrong), yet declined 6 of the 8 unanswerable questions, echoing Walert's finding that a simpler system declines more readily than an LLM \cite{cherumanal2024walert}. Five of the 64 LLM answers were cut off because Gemini's hidden reasoning tokens count towards the 1,024-token output limit, which will be raised before the evaluation. The reference labels were drafted with AI assistance, checked against each gold answer and its exact source quote with deterministic number matching (evidence file in the repository) and reviewed by me. An LLM judge agreed with them on 90 of 96 answers ($\kappa = 0.91$; all six disagreements are one-grade differences on S2, which I decided), and will be validated again against my own hand labels on the development set. S3's perfect score is a ceiling effect, not proof that it is error-free: even the paraphrases needed only one passage, so the test set adds outdated versions, two-passage questions and the unanswerable categories of \citet{peng2025unanswerability}.
+\textbf{Systems.} Table~\ref{tab:pilot_sys} compares S1 to S3. S3 answered all 24 answerable questions correctly, including the four paraphrases, cited a source every time (20 of 24 on the gold page) and declined all 8 unanswerable questions, including both near-misses. S2 was fully correct on only 8 and answered 6 of the 8 questions it should have declined, for example inventing a monthly late-payment charge and an appeal deadline that no document contains: the hallucination problem of Section~\ref{sec:back_halluc}. S1 returned the wrong FAQ answer confidently when a question shared its words (10 wrong), yet declined 6 of the 8 unanswerable questions, echoing Walert's finding that a simpler system declines more readily than an LLM \cite{cherumanal2024walert}. Five of the 64 LLM answers (three from S2, two from S3) were cut off because Gemini's hidden reasoning tokens count towards the 1,024-token output limit; both S3 answers had given the full answer with its citation before the cut and were labelled correct, but the limit will be raised before the evaluation. The reference labels were drafted with AI assistance (Appendix~\ref{sec:app_genai}), checked against each gold answer and its exact source quote with deterministic number matching (evidence file in the repository) and reviewed by me. An LLM judge agreed with them on 90 of 96 answers ($\kappa = 0.91$; all six disagreements are one-grade differences on S2, which I decided), and will be validated again against my own hand labels on the development set. S3's perfect score is a ceiling effect, not proof that it is error-free: even the paraphrases needed only one passage, so the test set adds outdated versions, two-passage questions and the unanswerable categories of \citet{peng2025unanswerability}.
 
-\begin{table}[tbp]
+\begin{table}[H]
 \caption{Pilot results for S1--S3 on 24 answerable and 8 unanswerable questions, including six paraphrased or near-miss questions (indicative only).}
 \label{tab:pilot_sys}
 \footnotesize
@@ -370,26 +388,33 @@ S3 RAG & \textbf{24} & 0 & 0 & 0 & \textbf{8} & 3.12 \\
 \end{tabular}
 \end{table}
 
-\textbf{Escalation signals.} Figure~\ref{fig:signals} shows two candidate S4 signals (AUROC with bootstrap 95\% intervals). The top dense score separated the groups fairly well (0.85 [0.69, 0.97]); the top BM25 score (0.71 [0.52, 0.88]) and the score gaps (0.55 to 0.58) did worse. Near-misses explain why: the late-payment and appeal questions outscored eight and ten answerable questions, because the documents are on topic but lack the answer. The model signal, one extra Gemini call asking whether the passages are enough, scored every answerable question 80 to 100 and every unanswerable one 0. This is weak evidence: there are eight negatives, the same model writes S3's answers and S3 had already declined all eight, so E3 must show that the signal adds to S3's own NOT\_FOUND.
-
-\begin{figure}[tbp]
+\begin{figure}[H]
 \centering
 \resizebox{\linewidth}{!}{\input{images/signal_plot}}
 \caption{Two S4 signals for the 32 pilot questions: answerable above each line, unanswerable below; near-misses are labelled.}
 \label{fig:signals}
 \end{figure}
 
+\textbf{Escalation signals.} Figure~\ref{fig:signals} shows two candidate S4 signals (AUROC with bootstrap 95\% intervals). The top dense score separated the groups fairly well (0.85 [0.69, 0.97]); the top BM25 score (0.71 [0.52, 0.88]) and the score gaps (0.55 to 0.58) did worse. Near-misses explain why: the late-payment and appeal questions outscored eight and ten answerable questions, because the documents are on topic but lack the answer. The model signal, one extra Gemini call asking whether the passages are enough, scored every answerable question 80 to 100 and every unanswerable one 0. This is weak evidence: there are eight negatives, the same model writes S3's answers and S3 had already declined all eight, so E3 must show that the signal adds to S3's own NOT\_FOUND.
+
+
 \subsection{Cost, Latency and Prototype} \label{sec:feas_proto}
 
 The whole pilot, including the judge and the model signal, used 192 API calls and cost US\$0.37. S3 cost US\$0.0034 per question with a median latency of 3.1 seconds, well within NF4. Projected from these measured costs, the evaluation would cost about US\$5.80 (RM26 at a cautious RM4.50 per US dollar): E1 US\$1.21, E2 US\$2.44 (twelve configurations on the 60 development questions; retrieval-only metrics need no LLM call), E3 US\$0.43 and judging US\$1.69, far below NF5's RM100 even with reruns. The interface (Section~\ref{sec:design_ui}) already runs the pipeline end to end on a laptop, and twelve unit tests pass.
 
-In summary, early evidence supports the first three assumptions and no blocking problem was found. The fourth is only partly supported: retrieval scores miss near-misses, and the model signal, although it separated every pilot question, rests on eight unanswerable questions. The main remaining risks are these near-misses and the time needed to write 200 questions; they are addressed by writing near-misses into the development set, comparing three signal groups for S4 and building the test set first (Section~\ref{sec:method_plan}).
+In summary, early evidence supports the first three assumptions and no blocking problem was found. The fourth is only partly supported: retrieval scores miss near-misses, and the model signal, although it separated every pilot question, rests on eight unanswerable questions. The main remaining risks are these near-misses and the time needed to write 200 questions; they are addressed by writing near-misses into the development set, comparing three signal groups for S4 and building the test set first (Section~\ref{sec:method_plan}); all ten risks, with their likelihood, impact, avoidance and backup plans, are in Appendix~\ref{sec:app_risk}.
 
 % Conclusions
 %%%%%%%%%%%%%%%%%%%%
 \section{Conclusions} \label{cha:concl}
 
-HWUM students need quick, correct answers to questions about fees, deadlines and regulations, but the official information is spread across many documents, and general chatbots answer such questions confidently and often wrongly. The literature shows that retrieval-augmented generation can ground answers in documents, but that citations, abstention and escalation must be measured rather than assumed, and that existing university chatbots rarely test questions they cannot answer. This project will therefore compare an FAQ baseline, a plain LLM, RAG with citations and RAG with confidence-based escalation on the same HWUM documents and test set, using paired statistics and error analysis. The feasibility work shows that the documents, retrieval, grounded generation and a working interface are in place at low cost, and that candidate escalation signals exist but need a larger, harder test set before they can be trusted. Semester 2 therefore concentrates on the test set, the confidence check, the evaluation and the approved usability study.
+HWUM students need quick, correct answers about fees, deadlines and regulations, but the official information is spread across many documents, and general chatbots answer such questions confidently and often wrongly: in the pilot, a plain LLM answered six of the eight questions it should have declined. The literature review showed that retrieval-augmented generation can ground answers in documents, but that citations, declining and escalation must be measured rather than assumed, and that existing university chatbots rarely test questions they cannot answer (G1 to G3).
+
+This project therefore proposes four systems built on one pipeline (an FAQ baseline, a plain LLM, RAG with citations, and RAG with confidence-based escalation) and compares them on the same HWUM documents and a 200-question test set that includes paraphrased, outdated-version and unanswerable questions. Each research question has its own experiment, measures and paired statistics (Table~\ref{tab:eval}), and success is judged against measurable criteria (SC1 to SC6).
+
+The feasibility work supports this plan. Twenty-three official sources were audited and five documents ingested with page-level tags; hybrid search found the right passage in the top five for 22 of 24 answerable questions; S3 answered all 24 correctly with citations and declined all eight unanswerable ones; and the top dense score separated the two groups with an AUROC of 0.85. The pilot cost US\$0.37, the full evaluation is projected at about US\$5.80, and the AskWatt prototype already runs end to end.
+
+The main open challenges are that S3's pilot score reflects easy questions, that retrieval scores alone miss near-miss questions, and that writing and labelling 200 questions takes time. Semester 2 therefore starts with the test set, then builds S4 and runs E1 to E3 once on the test set, followed by the usability study with HWUM students (E4), whose findings will be added to the report.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -411,7 +436,7 @@ HWUM students need quick, correct answers to questions about fees, deadlines and
 
 Figure~\ref{fig:gantt1} shows the activities carried out in Semester 1 and Figure~\ref{fig:gantt2} the plan for Semester 2. Weeks are teaching weeks: Semester 1 Week 1 began on 14 September 2026 and Semester 2 Week 1 begins on 18 January 2027. Diamonds are milestones and arrows show dependencies. No project work is planned during the December exams, and Weeks 9 and 10 of Semester 2 have no experiments scheduled, so they act as a buffer. Tasks are tracked weekly on a Notion board (\url{https://app.notion.com/p/6f58a0a5b3c549b98d6a51e9b8e36ae7}) and all code, results and records are in a GitHub repository (\url{https://github.com/sutin1215/grounded-university-support-assistant}); both are shared with the supervisor.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \resizebox{\linewidth}{!}{%
 \begin{ganttchart}[hgrid, vgrid={*{1}{dotted}}, x unit=0.62cm, y unit chart=0.5cm, y unit title=0.55cm,
@@ -424,18 +449,18 @@ Figure~\ref{fig:gantt1} shows the activities carried out in Semester 1 and Figur
 \ganttbar{Document audit and source list}{4}{5} \\
 \ganttbar{Ethics application}{4}{7} \\
 \ganttbar{Pilot: ingestion, retrieval, S1}{7}{7} \\
-\ganttbar{Pilot: S2, S3, judge, S4 signals}{7}{8} \\
-\ganttbar{Interface prototype}{8}{8} \\
+\ganttbar{Pilot: S2, S3, judge, S4 signals}{7}{9} \\
+\ganttbar{Interface prototype (AskWatt)}{8}{9} \\
 \ganttbar{D1 report}{6}{11} \\
 \ganttbar{D2 video}{10}{11} \\
 \ganttmilestone{Ethics application submitted (26 Oct)}{7} \\
 \ganttmilestone{D1 and D2 submitted (26 Nov)}{11}
 \end{ganttchart}}
-\caption{Semester 1: activities carried out in Weeks 1 to 11. Week 6 was a study week.}
+\caption{Semester 1: activities carried out in Weeks 1 to 9 and planned for Weeks 10 and 11. Week 6 was a study week; the ethics application was approved in November.}
 \label{fig:gantt1}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \resizebox{\linewidth}{!}{%
 \begin{ganttchart}[hgrid, vgrid={*{1}{dotted}}, x unit=0.62cm, y unit chart=0.5cm, y unit title=0.55cm,
@@ -501,7 +526,7 @@ R10 & Laptop failure or data loss & 1 & 4 & 4 & Code on GitHub; documents on One
 
 \textbf{Legal.} No personal data is collected or processed by the system, so the Personal Data Protection Act 2010 \cite{pdpa2010} and the UK GDPR that applies to Heriot-Watt as data controller are respected by design: the interface asks students not to type personal details, and only the question text of an escalation is stored. The usability study collects only pseudonymised questionnaire data, handled as described in the approved information sheet. The university documents are protected by copyright \cite{copyright1987}; they are used only for non-commercial research, cited by page rather than copied, and are not redistributed (the PDFs are excluded from the code repository, which is made private before submission). The supervisor confirmed on 13 October 2026 that these public documents may be used. The Gemini API is used under Google's terms for paid services \cite{google2026terms}: prompts and responses are not used to improve Google's products, but Google logs them for a limited period to detect misuse and for legal disclosures, and may store them in any country where it has facilities. Retention, not only training, is therefore a concern, so only public documents and test questions are sent, the interface tells users that questions go to Google's Gemini service and asks them not to type personal details, and the usability study gives participants prepared questions. All software libraries are used under their open-source licences.
 
-\textbf{Ethical.} The main ethical risk is harm from wrong answers about fees, deadlines or penalties. The design reduces it by answering only from official documents, showing sources and escalating when evidence is weak, and the interface tells students that it is a prototype and that official sources and staff decisions take precedence. Sensitive topics such as mental health, personal financial hardship and disciplinary cases are out of scope (Section~\ref{sec:intro_scope}). Students always know they are using an automated system. Ethics approval for the usability study was granted in November 2026; participants give informed consent, can withdraw at any time and are not asked about their own circumstances. Because LLM judges and AI-assisted labelling can be biased, every automatic label is validated against my own labels before it is used.
+\textbf{Ethical.} The main ethical risk is harm from wrong answers about fees, deadlines or penalties. The design reduces it by answering only from official documents, showing sources and escalating when evidence is weak, and the interface tells students that it is a prototype and that official sources and staff decisions take precedence. The project does not involve sensitive topics such as mental health, personal financial hardship and disciplinary cases (Section~\ref{sec:intro_scope}). Students always know they are using an automated system. Ethics approval for the usability study was granted in November 2026; participants give informed consent, can withdraw at any time and are not asked about their own circumstances. Because LLM judges and AI-assisted labelling can be biased, every automatic label is validated against my own labels before it is used.
 
 \textbf{Social.} The assistant is meant to support Student Services, not replace it: it handles routine factual questions and passes everything else to people, so staff can spend more time on cases that need judgement. It could make information more accessible outside office hours, but students who prefer human contact or are less confident in English may benefit less; the English-only scope is stated as a limitation. Over-reliance is reduced by showing sources so students can check answers, and the energy cost of LLM calls is limited by caching and a small knowledge base.
 
@@ -518,14 +543,14 @@ Generative AI was used in two separate ways in this project.
 
 The information sheet and consent form below were submitted with the ethics application on 26 October 2026, which was approved in November 2026. They will be used in the usability study (E4) in Semester 2.
 
-\includepdf[pages=-, scale=0.8, frame, pagecommand={}]{images/appendix_information_sheet.pdf}
-\includepdf[pages=-, scale=0.8, frame, pagecommand={}]{images/appendix_consent_form.pdf}
+\includepdf[pages=-, scale=0.74, frame, pagecommand={}]{images/appendix_information_sheet.pdf}
+\includepdf[pages=-, scale=0.74, frame, pagecommand={}]{images/appendix_consent_form.pdf}
 
 \section{Research Participant Questionnaire} \label{sec:app_questionnaire}
 
 The questionnaire (prepared questions, System Usability Scale \cite{brooke1996sus} and trust items) was submitted with the ethics application, approved in November 2026, and will be used in E4.
 
-\includepdf[pages=-, scale=0.8, frame, pagecommand={}]{images/appendix_questionnaire.pdf}
+\includepdf[pages=-, scale=0.74, frame, pagecommand={}]{images/appendix_questionnaire.pdf}
 
 
 % Rest of appendices...

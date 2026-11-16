@@ -114,7 +114,18 @@ As of 11 Nov 2026 (Week 9), D1 final pass (ethics approved in November 2026):
 - D1 edited for the final pass (see `docs/checkpoint_d1_final_pass.md`); the student compiles in Overleaf.
 - Labels: all 96 reviewed and confirmed by the student on 11 Nov (6 disputed ones decided by them).
 - D1 compiled locally on 11 Nov (MiKTeX; build steps in `docs/checkpoint_d1_final_pass.md`): main body 14 pages.
-- Next: student reads the PDF, uploads the d1 files to Overleaf; GenAI box last; D1 deadline 26 Nov.
+- 11 Nov layout pass: tables and figures held in their own sections ([H]), plan table trimmed, Fig 4 moved under Table 6,
+  heat map before the risk table, forms scaled to clear the header, architecture and use-case diagrams re-spaced: main body 13 pages.
+- 12 Nov review fixes (before sending the full draft to the supervisor): GenAI declaration statement drafted (in
+  hwu_template/declaration.tex, at the student's request), new Table 5 (evaluation design per RQ) and metric definitions,
+  technology table rebuilt (Chosen / Evidence / Alternatives rejected, selection criteria), RQ1 neutral, F3 -> Student
+  Services, SC3 fallback, truncation split (3 S2, 2 S3), stakeholder and second-writer plans, Gantt 1 to Week 9: main body ends mid page 14.
+- 13 Nov meeting 6 (in person): report good; survey not this semester (E4 in Semester 2, update report then);
+  scope reworded "This project does not involve ..."; fuller Conclusions; main-body pointers to Notion, GitHub and every
+  appendix. Applied 16 Nov (main body ends on page 14). Student Services topic plan dropped (topics from the audit).
+  AskWatt screenshots in docs/screenshots/ (taken with cached answers only); D2 script draft 1 in docs/d2/.
+- Next: send screenshots to the supervisor; D2 slides, clip and recording; final D1 checks; repo private; submit 24 Nov.
+- Earlier next steps: student reads the PDF, uploads the d1 files to Overleaf; GenAI box last; D1 deadline 26 Nov.
   Then: 200-question test set, S4, E1 to E3, E4 usability study in Semester 2 Weeks 6-8.
 - Supervisor meetings: usually Tuesdays 11:30 (meeting 6 moved to Fri 13 Nov). Notes go in `docs/meetings/`, weekly journal in `docs/journal/`.
 
@@ -124,8 +135,8 @@ As of 11 Nov 2026 (Week 9), D1 final pass (ethics approved in November 2026):
 
 ## Known issues
 
-- **GenAI declaration box is deliberately left for last** (student's choice): the statement in
-  `hwu_template/declaration.tex` is still template text. Do not edit it unless asked. Appendix B facts were
+- GenAI declaration statement in `hwu_template/declaration.tex` was drafted on 12 Nov at the student's request;
+  the student should read it and adjust the wording. Appendix B facts were
   corrected on 11 Nov.
 - The GitHub repo is public and contains the D1 draft and the student ID: make it private before submission
   (plagiarism checkers can match the report against it).
