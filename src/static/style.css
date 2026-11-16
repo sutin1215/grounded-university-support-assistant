@@ -1,106 +1,112 @@
-/* Visual style for the web interface (src/app.py).
-   Idea: a student's highlighted handbook. Answers read like a page of an official document,
-   citations are highlighter marks, and each source is a page tab the student can open.
-   Fonts (SIL Open Font Licence, files in this folder): Atkinson Hyperlegible for the interface,
-   chosen for legibility; Literata for answer text, designed for long reading. */
+/* Visual style for the web interface (src/app.py), "AskWatt".
+   Colours and type follow the Heriot-Watt brand guidelines (hw.ac.uk, "HWU brand guidelines"):
+   Heriot Blue and Heriot Blue Dark lead, Heriot Blue Bright and Shade support them, with plenty of white
+   space; the brand's accent bar is used on the sidebar and the wordmark. Secondary colours mark states:
+   Highlands Orchil for questions passed to staff, Holyrood Green for resolved ones.
+   Type: Arial, the brand's replacement for Univers, for the interface; Libre Baskerville (SIL Open Font
+   Licence, file in this folder), a free version of the brand's secondary typeface Baskerville, for answers.
+   No university logo or crest is used: this is a student project prototype, not an official service. */
 
-@font-face { font-family: "Atkinson Hyperlegible"; font-weight: 400; font-display: swap;
-  src: url("/app/static/fonts/atkinson-hyperlegible-latin-400-normal.woff2") format("woff2"); }
-@font-face { font-family: "Atkinson Hyperlegible"; font-weight: 700; font-display: swap;
-  src: url("/app/static/fonts/atkinson-hyperlegible-latin-700-normal.woff2") format("woff2"); }
-@font-face { font-family: "Literata"; font-weight: 400; font-display: swap;
-  src: url("/app/static/fonts/literata-latin-400-normal.woff2") format("woff2"); }
-@font-face { font-family: "Literata"; font-weight: 400; font-style: italic; font-display: swap;
-  src: url("/app/static/fonts/literata-latin-400-italic.woff2") format("woff2"); }
-@font-face { font-family: "Literata"; font-weight: 700; font-display: swap;
-  src: url("/app/static/fonts/literata-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "Libre Baskerville"; font-weight: 400; font-display: swap;
+  src: url("/app/static/fonts/libre-baskerville-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Libre Baskerville"; font-weight: 400; font-style: italic; font-display: swap;
+  src: url("/app/static/fonts/libre-baskerville-latin-400-italic.woff2") format("woff2"); }
+@font-face { font-family: "Libre Baskerville"; font-weight: 700; font-display: swap;
+  src: url("/app/static/fonts/libre-baskerville-latin-700-normal.woff2") format("woff2"); }
 
 :root {
-  --paper: #f3f5f1;      /* page background, cool off-white */
-  --sheet: #ffffff;      /* answer sheets */
-  --ink: #1f2a2e;        /* text */
-  --muted: #5b6766;      /* secondary text */
-  --teal: #2d6a64;       /* actions and links */
-  --marker: #f3d250;     /* highlighter: citations and page tabs */
-  --refer: #46569e;      /* referral to staff */
-  --rule: #d8ddd7;       /* hairlines */
-  --ui: "Atkinson Hyperlegible", system-ui, sans-serif;
-  --read: "Literata", Georgia, serif;
+  --blue-dark: #001b40;    /* Heriot Blue Dark: sidebar, headings, page tabs */
+  --blue: #004067;         /* Heriot Blue: links, buttons, question marker */
+  --blue-bright: #009fe1;  /* Heriot Blue Bright: accent bars, focus */
+  --blue-shade: #bbe0f8;   /* Heriot Blue Shade: citation marks, always with Dark text */
+  --stone: #665544;        /* Castle Stone: secondary text */
+  --orchil: #6f176e;       /* Highlands Orchil: passed to staff */
+  --green: #4b7842;        /* Holyrood Green: resolved */
+  --page: #ffffff;
+  --rule: #d3dde6;         /* hairlines, a light tint of Heriot Blue */
+  --ink: #001b40;
+  --ui: "Univers LT Pro", "Univers", Arial, Helvetica, sans-serif;
+  --read: "Libre Baskerville", Baskerville, Georgia, serif;
 }
 
 html, body, .stApp, .stApp p, .stApp li, .stApp label, .stApp button, .stApp input, .stApp textarea { font-family: var(--ui); }
 [data-testid="stIconMaterial"] { font-family: "Material Symbols Rounded" !important; }
-.stApp { background: var(--paper); color: var(--ink); }
-.block-container { max-width: 760px; padding-top: 2.2rem; }
-.stApp a, .stApp a:visited { color: var(--teal) !important; text-underline-offset: 3px; }
-.stApp a:hover { color: var(--ink) !important; }
-:focus-visible { outline: 3px solid var(--marker) !important; outline-offset: 2px; }
+.stApp { background: var(--page); color: var(--ink); }
+.block-container { max-width: 760px; padding-top: 2.4rem; }
+.stApp a, .stApp a:visited { color: var(--blue) !important; text-underline-offset: 3px; }
+.stApp a:hover { color: var(--blue-bright) !important; }
+:focus-visible { outline: 3px solid var(--blue-bright) !important; outline-offset: 2px; }
 
-/* Header: wordmark with a single highlighter stroke, the one bold element */
-.masthead { margin: 0 0 1.4rem; }
-.stApp h1.wordmark { font: 700 2.6rem/1.05 var(--ui); letter-spacing: -0.01em; margin: 0 0 0 -0.15em;
-  display: inline-block; padding: 0 0.15em !important; color: var(--ink);
-  background: linear-gradient(transparent 46%, var(--marker) 46%, var(--marker) 80%, transparent 80%); }
-.tagline { font: 400 1.05rem/1.5 var(--ui); color: var(--muted); margin: 0.7rem 0 0; max-width: 34em; }
-.notice { font-size: 0.88rem; color: var(--muted); border-left: 3px solid var(--rule);
-  padding: 0.1rem 0 0.1rem 0.8rem; margin: 1rem 0 0; }
+/* Header: wordmark with the brand's accent bar beside it */
+.masthead { margin: 0 0 1.4rem; border-left: 6px solid var(--blue-bright); padding-left: 1rem; }
+.stApp h1.wordmark { font: 700 2.5rem/1.05 var(--ui); letter-spacing: -0.015em; margin: 0;
+  padding: 0 !important; color: var(--blue-dark); }
+.tagline { font: 400 1.05rem/1.5 var(--ui); color: var(--stone); margin: 0.55rem 0 0; max-width: 34em; }
+.notice { font-size: 0.86rem; color: var(--stone); background: #f4f8fb; border-radius: 3px;
+  padding: 0.55rem 0.8rem; margin: 1.1rem 0 0; }
 
 /* Example questions */
-.stApp p.try { font: 700 0.95rem var(--ui); margin: 2rem 0 0.2rem; }
-.stButton > button { background: var(--sheet); color: var(--ink); border: 1px solid var(--rule);
-  border-radius: 999px; font-weight: 400; text-align: left; padding: 0.45rem 1rem; }
-.stButton > button:hover { border-color: var(--teal); color: var(--teal); background: var(--sheet); }
+.stApp p.try { font: 700 0.95rem var(--ui); color: var(--blue-dark); margin: 2rem 0 0.2rem; }
+.stButton > button { background: var(--page); color: var(--blue); border: 1.5px solid var(--blue);
+  border-radius: 3px; font-weight: 400; text-align: left; padding: 0.45rem 0.95rem; }
+.stButton > button:hover, .stButton > button:focus { background: var(--blue); color: #fff; border-color: var(--blue); }
 
 /* A question and its answer */
-.stApp p.asked { font: 700 1.12rem/1.4 var(--ui); margin: 2.2rem 0 0.3rem; padding-left: 0.8rem;
-  border-left: 3px solid var(--teal); }
-.sheet { background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px;
-  padding: 1.3rem 1.5rem 1.1rem; }
-.answer { font: 400 1.04rem/1.7 var(--read); margin: 0; }
+.stApp p.asked { font: 700 1.1rem/1.4 var(--ui); color: var(--blue-dark); margin: 2.2rem 0 0.35rem;
+  padding-left: 0.8rem; border-left: 4px solid var(--blue-bright); }
+.sheet { background: var(--page); border: 1px solid var(--rule); border-top: 3px solid var(--blue);
+  border-radius: 3px; padding: 1.3rem 1.5rem 1.1rem; }
+.answer { font: 400 0.98rem/1.8 var(--read); color: #10213a; margin: 0; }
 .answer p { margin: 0 0 0.8rem; }
 .answer ul { margin: 0 0 0.8rem 1.1rem; padding: 0; }
-.cite { font: 700 0.78rem var(--ui); background: var(--marker); color: var(--ink);
-  padding: 0.05rem 0.32rem; border-radius: 2px; margin: 0 0.1rem; vertical-align: 0.12em; }
+.cite { font: 700 0.76rem var(--ui); background: var(--blue-shade); color: var(--blue-dark);
+  padding: 0.06rem 0.34rem; border-radius: 2px; margin: 0 0.1rem; vertical-align: 0.12em; }
 
 /* Sources: each cited page is a tab with its page number */
 .sources { margin: 1rem 0 0; padding-top: 0.9rem; border-top: 1px solid var(--rule); }
-.sources h4 { font: 700 0.9rem var(--ui); margin: 0 0 0.6rem; color: var(--muted); }
+.sources h4 { font: 700 0.88rem var(--ui); margin: 0 0 0.6rem; color: var(--stone); }
 .source { display: grid; grid-template-columns: 4.2rem 1fr; gap: 0.9rem; align-items: start;
   margin-bottom: 0.7rem; }
-.tab { background: var(--marker); text-align: center; padding: 0.35rem 0 0.3rem; border-radius: 2px 2px 0 0;
-  font: 700 1.05rem/1 var(--ui); }
-.tab small { display: block; font: 400 0.72rem var(--ui); margin-top: 0.2rem; }
-.doc { font-size: 0.95rem; line-height: 1.4; }
-.doc .version { color: var(--muted); }
+.tab { background: var(--blue-dark); color: #fff; text-align: center; padding: 0.38rem 0 0.32rem;
+  border-radius: 2px; font: 700 1.05rem/1 var(--ui); border-bottom: 3px solid var(--blue-bright); }
+.tab small { display: block; font: 400 0.7rem var(--ui); margin-top: 0.2rem; color: var(--blue-shade); }
+.doc { font-size: 0.94rem; line-height: 1.45; color: var(--ink); }
+.doc .version { color: var(--stone); }
 .doc a { font-weight: 700; }
-.meta { font-size: 0.82rem; color: var(--muted); margin: 0.8rem 0 0; }
+.meta { font-size: 0.82rem; color: var(--stone); margin: 0.8rem 0 0; }
 
 /* Referral to Student Services */
-.sheet.refer { border-left: 5px solid var(--refer); }
-.stApp .refer h3 { font: 700 1.1rem var(--ui); margin: 0 0 0.4rem; padding: 0 !important; color: var(--refer); }
-.refer p { font: 400 1rem/1.6 var(--read); margin: 0 0 0.9rem; }
-.ticket { display: inline-block; border: 1.5px dashed var(--refer); color: var(--refer);
+.sheet.refer { border-top: 1px solid var(--rule); border-left: 5px solid var(--orchil); }
+.stApp .refer h3 { font: 700 1.08rem var(--ui); margin: 0 0 0.4rem; padding: 0 !important; color: var(--orchil); }
+.refer p { font: 400 0.98rem/1.75 var(--read); margin: 0 0 0.9rem; color: #10213a; }
+.ticket { display: inline-block; border: 1.5px dashed var(--orchil); color: var(--orchil);
   padding: 0.35rem 0.8rem; font: 700 0.95rem var(--ui); border-radius: 3px; }
 .ticket span { font-weight: 400; }
 
 /* Staff view */
-.waiting { font: 400 1.05rem var(--ui); color: var(--muted); margin: 0.4rem 0 1.2rem; }
-.waiting b { color: var(--ink); }
-table.queue { width: 100%; border-collapse: collapse; background: var(--sheet);
+.waiting { font: 400 1.05rem var(--ui); color: var(--stone); margin: 0.4rem 0 1.2rem; }
+.waiting b { color: var(--blue-dark); }
+table.queue { width: 100%; border-collapse: collapse; background: var(--page);
   border: 1px solid var(--rule); font-size: 0.95rem; }
-.queue th { text-align: left; font-weight: 700; padding: 0.65rem 0.8rem; border-bottom: 2px solid var(--ink); }
+.queue th { text-align: left; font-weight: 700; padding: 0.65rem 0.8rem; color: #fff; background: var(--blue-dark); }
 .queue td { padding: 0.7rem 0.8rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
-.queue td.q { font-family: var(--read); }
+.queue td.q { font-family: var(--read); font-size: 0.92rem; }
 .pill { font-size: 0.8rem; padding: 0.12rem 0.55rem; border-radius: 999px; white-space: nowrap; }
-.pill.open { border: 1.5px solid var(--refer); color: var(--refer); }
-.pill.resolved { background: var(--teal); color: #fff; }
+.pill.open { border: 1.5px solid var(--orchil); color: var(--orchil); }
+.pill.resolved { background: var(--green); color: #fff; }
 
-/* Sidebar and input */
-section[data-testid="stSidebar"] { background: #e9ece6; border-right: 1px solid var(--rule); }
-section[data-testid="stSidebar"] .kb { font-size: 0.85rem; color: var(--muted); line-height: 1.45; }
-section[data-testid="stSidebar"] .kb li { margin-bottom: 0.35rem; }
+/* Sidebar: Heriot Blue Dark with a Bright accent bar, as in the brand's alternative layouts */
+section[data-testid="stSidebar"] { background: var(--blue-dark); border-right: 6px solid var(--blue-bright); }
+section[data-testid="stSidebar"] p, section[data-testid="stSidebar"] label,
+section[data-testid="stSidebar"] li, section[data-testid="stSidebar"] b,
+section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p { color: #ffffff !important; }
+section[data-testid="stSidebar"] .kb { font-size: 0.85rem; line-height: 1.45; padding-left: 1.1rem; }
+section[data-testid="stSidebar"] .kb li { color: var(--blue-shade) !important; margin-bottom: 0.35rem; }
+section[data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"] span,
+section[data-testid="stSidebar"] button[kind="headerNoPadding"] span { color: #ffffff !important; }
+section[data-testid="stSidebar"] input { color: var(--blue-dark) !important; }
 [data-testid="stChatInput"] textarea { font-size: 1rem; }
-[data-testid="stChatInput"] { border-color: var(--teal); }
+[data-testid="stChatInput"] { border-color: var(--blue) !important; }
 
 @media (max-width: 640px) {
   .wordmark { font-size: 2.1rem; }
@@ -109,6 +115,11 @@ section[data-testid="stSidebar"] .kb li { margin-bottom: 0.35rem; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 header[data-testid="stHeader"] { background: transparent; }
-/* Reading text in Literata; this overrides the interface font set on .stApp p above */
+/* Reading text in Libre Baskerville; this overrides the interface font set on .stApp p above */
 .stApp .answer p, .stApp .answer li, .stApp .refer p, .stApp td.q { font-family: var(--read); }
 .stApp .doc { font-family: var(--ui); }
+/* Form button (staff view): filled Heriot Blue, the one primary action on that page */
+[data-testid="stFormSubmitButton"] button { background: var(--blue); color: #fff; border: 1.5px solid var(--blue); border-radius: 3px; }
+[data-testid="stFormSubmitButton"] button:hover { background: var(--blue-dark); color: #fff; border-color: var(--blue-dark); }
+.stApp table.queue, .stApp .queue th, .stApp .queue td { font-family: var(--ui); }
+.stApp .queue td.q { font-family: var(--read); }

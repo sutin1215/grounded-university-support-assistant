@@ -128,9 +128,10 @@ def masthead(tagline):
 def student_view(system_name):
     masthead("Ask about fees, deadlines and university rules. Every answer shows the page of the "
              "official Heriot-Watt or HWUM document it comes from.")
-    st.markdown('<p class="notice">A student project prototype. Please don\'t type personal details such as '
-                "your student ID, health or money matters: questions are sent to Google's Gemini service "
-                "to write the answer.</p>", unsafe_allow_html=True)
+    st.markdown('<p class="notice">A student project prototype, not an official university service: check the '
+                "linked official page, and staff decisions always take precedence. Please don't type personal "
+                "details such as your student ID, health or money matters: questions are sent to Google's "
+                "Gemini service to write the answer.</p>", unsafe_allow_html=True)
 
     history = st.session_state.setdefault("history", [])
     sources = load_sources()

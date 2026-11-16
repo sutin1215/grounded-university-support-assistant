@@ -9,7 +9,7 @@ gatherUsageStats = false
 enableStaticServing = true   # serves src/static (fonts) at /app/static
 
 [theme]
-primaryColor = "#2d6a64"
-backgroundColor = "#f3f5f1"
-secondaryBackgroundColor = "#e9ece6"
-textColor = "#1f2a2e"
+primaryColor = "#004067"   # Heriot Blue
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f4f8fb"
+textColor = "#001b40"   # Heriot Blue Dark

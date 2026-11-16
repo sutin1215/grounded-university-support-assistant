@@ -124,7 +124,12 @@ As of 11 Nov 2026 (Week 9), D1 final pass (ethics approved in November 2026):
   scope reworded "This project does not involve ..."; fuller Conclusions; main-body pointers to Notion, GitHub and every
   appendix. Applied 16 Nov (main body ends on page 14). Student Services topic plan dropped (topics from the audit).
   AskWatt screenshots in docs/screenshots/ (taken with cached answers only); D2 script draft 1 in docs/d2/.
-- Next: send screenshots to the supervisor; D2 slides, clip and recording; final D1 checks; repo private; submit 24 Nov.
+- 16 Nov (later): second-person question plan also dropped (test set written and labelled by the student alone).
+  AskWatt restyled in Heriot-Watt brand colours (Heriot Blue palette from the official HWU brand guidelines PDF,
+  Arial + Libre Baskerville; no logo; notice says it is a student prototype). D1 Fig. 3 and docs/screenshots redone;
+  final D1 check done (numbers vs eval/results, references, spelling, layout): main body ends on page 14.
+  Old Atkinson/Literata font files in src/static/fonts are no longer used.
+- Next: send screenshots to the supervisor; D2 slides, clip and recording; repo private; submit 24 Nov.
 - Earlier next steps: student reads the PDF, uploads the d1 files to Overleaf; GenAI box last; D1 deadline 26 Nov.
   Then: 200-question test set, S4, E1 to E3, E4 usability study in Semester 2 Weeks 6-8.
 - Supervisor meetings: usually Tuesdays 11:30 (meeting 6 moved to Fri 13 Nov). Notes go in `docs/meetings/`, weekly journal in `docs/journal/`.
