@@ -51,7 +51,7 @@ Slide text at least 24 pt, dark on light. Never show the `.env` file, the API ke
 
 Record the clip beforehand: the late-penalty example question with S3, then "What time does the library close on Saturdays?", then the staff view, then S2 on the late-penalty question. All of these are cached, so they cost nothing.
 
-> "Here is AskWatt. The answer comes only from the official documents, and each yellow number links to the exact page of the PDF.
+> "Here is AskWatt. The answer comes only from the official documents, and each blue number links to the exact page of the PDF.
 > When the documents don't cover a question, it doesn't guess: it passes it to Student Services with a ticket number, and staff see it in their own view.
 > The plain model, on the same late-work question, says 3% per day. The official document says 30%."
 
