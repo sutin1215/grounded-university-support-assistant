@@ -1,96 +1,104 @@
-# D2 video script: Preparation and Feasibility (target 4:40, limit 5:00)
+# D2 video script, version 2 (18 Nov 2026)
 
-Draft 1, 16 Nov 2026. About 650 spoken words: about 4:20 at a normal 150 words a minute, 4:50 at a slow 135. If a run-through goes over 4:50, cut the AUROC sentence in Part 4 first. Every number below matches D1 v8.
+Target 4:40, limit 5:00. About 680 spoken words: 4:30 at 150 words a minute, 4:40 at 145. If a run-through goes over 4:50, cut the judge sentence in Part 4 first, then the tool sentence about LangChain. Format agreed on 18 Nov: voice-over only, 5 Canva slides plus the AskWatt clip, the Canva Gantt page and the risk heat map, recorded part by part in Clipchamp. Every number matches D1 v13.
 
-## What the markers look for (D2 guide), and where each part covers it
-| Rubric point | Where in the video |
-|---|---|
-| Preparation work: what's done and why it matters | Part 2 |
-| Method and tool choice, justified against alternatives | Part 3 |
-| Feasibility evidence: pilot data, prototype, calculations | Part 4 |
-| Plan, dependencies, contingencies; risks quantified with mitigations and fallbacks | Part 5 |
-| Success criteria: concrete, measurable, justified | Part 6 |
-| Professional, legal, ethical and social issues | Part 7 |
-| Professionalism: structured, under 5:00, clear audio, readable visuals | All parts, plus the checklist at the end |
+## Coverage check
 
-## Visuals to prepare (the guide suggests 5 slides or fewer, plus clips)
-- **Slide 1:** title, your name, supervisor, and one line on the problem
-- **Slide 2:** preparation timeline (Weeks 1 to 9), one line per item
-- **Slide 3:** tool choices, a simplified Table 2 (Chosen / Why / Rejected), next to the architecture diagram (Fig. 1)
-- **Clip:** AskWatt screen recording, about 40 seconds (see Part 4)
-- **Slide 4:** pilot numbers, a simplified Table 7: 24 answerable and 8 unanswerable questions, S1/S2/S3
-- **Figures from D1:** Semester 2 Gantt (Fig. 6) and risk heat map (Fig. 7)
-- **Slide 5:** success targets on the left, ethics and legal points on the right
+| What is asked for | Source | Part |
+|---|---|---|
+| Overview | Dr Rosalind's email | 1 |
+| Problem statement | Dr Rosalind's email | 1 |
+| Objectives and scope | Dr Rosalind's email | 2 |
+| System diagram, explained quickly and precisely | Dr Rosalind's email | 3 |
+| Method and tool choice, justified against alternatives | Rubric | 3 |
+| Preparation work: what's done and why it matters | Rubric | 4 |
+| Feasibility evidence: pilot data, prototype, calculations | Rubric | 4 |
+| Plan with dependencies and contingencies | Rubric | 5 |
+| Quantified risks, each with mitigation and fallback | Rubric | 5 |
+| Success criteria: concrete, measurable, justified | Rubric | 6 |
+| Professional, legal, ethical and social issues | Rubric | 6 |
+| Within 5:00, clear audio, readable visuals | Rubric and email | All |
 
-Slide text at least 24 pt, dark on light. Never show the `.env` file, the API key, or your email.
+## What goes on screen
+
+| Asset | Content | Used in |
+|---|---|---|
+| Slide 1 | Title "AskWatt: a grounded support assistant for HWUM students", name, supervisor; the problem in three short lines with the numbers 23 sources, 6 outdated, plain chatbot 8/24 | Part 1, Part 7 |
+| Slide 2 | Objectives O1 to O5 as five short lines; scope in and out as two columns | Part 2 |
+| Slide 3 | D1 Figure 1 (architecture), with three tool choices underneath: Gemini Flash vs local model, hybrid search vs one method, plain Python vs LangChain | Part 3 |
+| AskWatt clip | About 40 s: the late-penalty example with S3, the library question passed to staff, the staff view, then S2 on the late-penalty question | Part 4 |
+| Slide 4 | Pilot numbers: S1/S2/S3 on 24 answerable and 8 unanswerable questions; judge 90/96; cost US$0.37, projected about US$6 (RM26) against RM100 | Part 4 |
+| Canva Gantt | Page 2 of "AskWatt project timeline" (Semester 2 plan) | Part 5 |
+| Heat map | D1 Figure 7 (risk heat map) | Part 5 |
+| Slide 5 | Success targets on the left; PLES points on the right | Part 6 |
+
+Slide text 24 pt or larger, dark on light, HW colours. Never show the `.env` file, the API key or an email address.
 
 ---
 
-## Part 1 (0:00–0:25): Title and problem
+## Part 1 (0:00–0:30): Overview and problem
 **Show:** Slide 1
 
-> "Hi, I'm Faizal, and this is my honours project: a grounded support assistant for students at Heriot-Watt Malaysia.
-> Students often need quick answers about fees, deadlines, late submission and mitigating circumstances. The official answers exist, but they are spread across many PDFs and web pages. And general chatbots answer these questions confidently, and often incorrectly."
+> "Hi, I'm Faizal. This is AskWatt, my honours project: a support assistant for Heriot-Watt Malaysia students that answers only from official documents, shows its sources, and passes the question to staff when it isn't sure.
+> It's needed because answers on fees, deadlines and penalties are spread across 23 official sources, six of them outdated copies still online. And general chatbots guess: in my pilot, a plain language model was fully accurate on only 8 of 24 questions."
 
-## Part 2 (0:25–1:05): Preparation work
-**Show:** Slide 2 (timeline)
+## Part 2 (0:30–1:00): Objectives and scope
+**Show:** Slide 2
 
-> "This semester, I audited 27 sources and kept the 23 official ones, then split five key PDFs into 45 passages, each tagged with its page.
-> I built five search methods and three of my four systems: an FAQ bot, a plain language model, and one that answers only from the documents, with citations.
-> I tested them on 32 pilot questions, built a working app called AskWatt, and my usability study has ethics approval."
+> "The objectives are: to study existing work; to build a knowledge base and a labelled test set; to build and compare four systems, from a simple FAQ bot and a plain language model to a document-based system with citations, and the same system with a confidence check; and to test the app with students.
+> The scope is fees, deadlines, mitigating circumstances, assessment and regulations, from public documents in English. It does not involve personal cases, personal data or live deployment."
 
-## Part 3 (1:05–1:45): Method and tool choices
-**Show:** Slide 3 (tool table and architecture diagram)
+## Part 3 (1:00–1:45): System diagram and tool choices
+**Show:** Slide 3. Point at each box as you say it.
 
-> "Each tool was picked against four tests: low cost, it can be run on a laptop, tests can be repeated exactly, and evidence that it works.
-> For the language model, I chose Gemini Flash, at about a third of a US cent per question. A local model would be free, but too slow on a laptop.
-> For search, I combine keyword search with meaning-based search, because in the pilot each one missed passages the other found. And plain Python, not LangChain, keeps every setting visible."
+> "Here's the system. Offline, the official PDFs are split into passages, each tagged with its document and page. For each question, hybrid search, keyword plus meaning-based, picks the five best passages. Gemini answers only from those, with a citation number on each sentence, or says the answer isn't there. In the final system, a confidence check sits after the search and sends weak cases to Student Services.
+> Tools were chosen for cost, laptop use and repeatable tests. Gemini Flash costs a third of a US cent per question; a local model was too slow. Hybrid search, because each method found passages the other missed. And plain Python, not LangChain, so every prompt stays visible."
 
-## Part 4 (1:45–2:50): Feasibility evidence and demo
+## Part 4 (1:45–2:45): Preparation and feasibility
 **Show:** AskWatt clip, then Slide 4
 
-Record the clip beforehand: the late-penalty example question with S3, then "What time does the library close on Saturdays?", then the staff view, then S2 on the late-penalty question. All of these are cached, so they cost nothing.
+Record the clip first, with cached questions only (they cost nothing): the late-penalty example with S3, then "What time does the library close on Saturdays?", then the staff view, then S2 on the late-penalty question.
 
-> "Here is AskWatt. The answer comes only from the official documents, and each blue number links to the exact page of the PDF.
-> When the documents don't cover a question, it doesn't guess: it passes it to Student Services with a ticket number, and staff see it in their own view.
-> The plain model, on the same late-work question, says 3% per day. The official document says 30%."
+> "So far I've audited 27 sources, built three of the four systems, run a 32-question pilot, and built this app. The usability study already has ethics approval.
+> Each answer comes only from the documents, and each blue number links to the exact PDF page. When the documents don't cover a question, it doesn't guess: it passes it to Student Services with a ticket number, and staff see it in their own view. The plain model, on the same question, says 3% per day. The document says 30%."
 
 **Switch to Slide 4.**
 
-> "In the pilot, the document-based system was fully accurate on all 24 answerable questions and declined all 8 it couldn't answer. The plain model managed only 8, and made up answers to 6 it should have declined. The whole pilot cost 37 US cents.
-> These pilot questions follow the documents' wording, so the full score is a ceiling. The final test set is harder, and that's where the confidence check matters: one search score already split the two groups with an AUROC of 0.85."
+> "In the pilot, the document-based system was fully accurate on all 24 answerable questions and declined all 8 it couldn't answer. An AI judge agreed with my labels on 90 of 96. The pilot cost 37 US cents; the full plan, about 6 dollars, well within budget. These questions follow the documents closely, so the final test set is tougher."
 
-## Part 5 (2:50–3:35): Plan and risks
-**Show:** Semester 2 Gantt, then the heat map
+## Part 5 (2:45–3:35): Plan and risks
+**Show:** Canva Gantt (Semester 2), then the heat map
 
-> "Semester 2 has five stages, each needing the one before: write 200 test questions, 60 for tuning and 140 used once; build the confidence check; run the final tests; the usability study in Weeks 6 to 8; then write up, with Weeks 9 and 10 as a buffer.
-> The two biggest risks score 12 out of 25. Writing the questions may take longer, so I start straight after the exams, and the fallback is 150 questions with the same mix. Workload from other courses is covered by weekly sprints and the buffer, and the fallback is to drop an optional feature and shorten the study."
+> "Next semester is one chain: test set, search tests, confidence check, one final test run, then analysis. The 140 test questions come first, in Weeks 1 to 3. The usability study needs the confidence check in the app, so it runs in Weeks 6 to 8, and Weeks 9 and 10 are a buffer."
 
-## Part 6 (3:35–4:10): Success targets
-**Show:** Slide 5, left side
+**Switch to the heat map.**
 
-> "Success is measurable. The document-based system should be fully accurate on at least 80% of answerable questions, 20 points ahead of the plain model, with paired tests. At least 85% of its citations should support the answer. The confidence check should halve the false answers while sending no more than a fifth of answerable questions to staff. And the app should answer within 10 seconds, cost under 100 ringgit, and score at least 68 on the usability scale."
+> "The two biggest risks score 12 out of 25. If writing the questions takes longer, I start straight after the exams, and the fallback is 150 questions. For workload from other courses: weekly sprints and the buffer, and the fallback is dropping one optional feature. All ten risks have a fallback in the report."
 
-## Part 7 (4:10–4:40): Professional, legal, ethical and social
-**Show:** Slide 5, right side
+## Part 6 (3:35–4:30): Success targets and PLES
+**Show:** Slide 5, left side, then right side
 
-> "Ethically and legally, the app collects no personal data: only the question text is kept when something is passed to staff, in line with the PDPA and UK GDPR. Documents are cited by page, not copied. The usability study has ethics approval and informed consent, I follow the BCS Code of Conduct, and I declare my use of AI tools. The aim is to support staff, not replace them."
+> "Success is measurable. The document-based system should be fully accurate on at least 80% of answerable questions, 20 points ahead of the plain model, with a paired test. At least 85% of citations should support the answer. The confidence check should halve false answers while sending at most a fifth of answerable questions to staff, because a wrong fee answer costs a student more than a short wait. And answers should take under 10 seconds, with a usability score of at least 68."
 
-## Part 8 (4:40–4:55): Close
-**Show:** Slide 1 again, or the AskWatt home screen
+**Switch to the right side.**
 
-> "So the documents, the search, the answers, a working app and the budget are all in place. Semester 2 is about the harder test set, the confidence check, and a fair, measured comparison. Thank you for watching."
+> "No personal data is collected, in line with the PDPA and UK GDPR; documents are cited by page, not copied; the study has ethics approval and consent; and I follow the BCS Code and declare my AI use. The aim is to support staff, not replace them."
+
+## Part 7 (4:30–4:40): Close
+**Show:** Slide 1 again
+
+> "So the documents, search, answers, app and budget are in place. Semester 2 is about the tougher test set, the confidence check and a fair comparison. Thank you for watching."
 
 ---
 
-## Words to practise (prominent R sounds that have no easy swap)
-Heriot-Watt, Faizal (fine) / Haris (if you add it), grounded, PDFs, prototype is avoided (say "app"), Student Services, ringgit, PDPA (fine), GDPR, ceiling (fine), "three", "approved", "risks", "around".
+## Words to practise (prominent R sounds with no easy swap)
+Heriot-Watt, Faizal (fine), university, Student Services, PDFs, citation, ringgit, PDPA, GDPR, ceiling (fine), "three", "risks", "first", "after", "chain" (fine).
 
-Swaps already used: "search" for retrieval, "fully accurate" for correct, "false answers" for wrong answers, "targets" for criteria, "app" for prototype, "made up" for hallucinated.
+Swaps already used: "fully accurate" for correct, "made up" for hallucinated, "app" for prototype, "search" for retrieval, "tougher" for harder, "targets" for criteria, "false answers" for wrong answers, "study" for research.
 
 ## Recording checklist
-1. Run AskWatt and record the clip on its own first (OBS or Xbox Game Bar), with the browser zoomed to 125% so the text is readable.
-2. Record the narration over the slides in one take per part. Short parts are easy to redo.
-3. Edit in Clipchamp: put the parts together, trim the pauses, and normalise the audio.
-4. Check the length is under 5:00 (aim for 4:40), the text is readable at 1080p, and no key or email is visible.
-5. Export as MP4 (H.264), under 100 MB.
+1. Run AskWatt with cached questions and record the clip on its own first (Clipchamp screen recording), with the browser zoomed to 125% so the text is readable.
+2. Present the Canva slides full screen and record each part separately, with the narration.
+3. In Clipchamp: put the parts in order, drop the clip into Part 4, trim pauses, and normalise the audio.
+4. Check that it's under 5:00 (aim for 4:40), the text is readable at 1080p, and no key or email is visible.
+5. Export as MP4 (1080p, H.264), under 100 MB.
