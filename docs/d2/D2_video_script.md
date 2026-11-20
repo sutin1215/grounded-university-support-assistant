@@ -1,6 +1,6 @@
 # D2 video script, version 2 (18 Nov 2026)
 
-Target 4:40, limit 5:00. About 680 spoken words: 4:30 at 150 words a minute, 4:40 at 145. If a run-through goes over 4:50, cut the judge sentence in Part 4 first, then the tool sentence about LangChain. Format agreed on 18 Nov: voice-over only, an 11-slide Canva deck built from a Canva template, plus the AskWatt clip, recorded part by part in Clipchamp. Every number matches D1 v13.
+Target 4:40, limit 5:00. About 670 spoken words: about 4:57 at Faizal's measured pace (136 words a minute, from the Part 1 recording), and about 4:35 once the editor tightens pauses. If a run-through goes over 4:50, cut "All ten risks have a fallback in the report" in Part 5 first, then the LangChain sentence in Part 3. Format agreed on 18 Nov: voice-over only, an 11-slide Canva deck built from a Canva template, plus the AskWatt clip, narration recorded as one audio file per slide (table below) and assembled into the video by Claude, with subtitles. Every number matches D1 v13.
 
 ## Coverage check
 
@@ -25,7 +25,7 @@ Canva deck "AskWatt D2 slides" (11 slides, PDF copy in `docs/d2/AskWatt_D2_slide
 
 | Slide | Content | Used in |
 |---|---|---|
-| 1 | Title: AskWatt, name, supervisor | Part 1 |
+| 1 | Title: AskWatt, full dissertation title, name and student ID (H00459013), supervisor | Part 1 |
 | 2 | In this video: the running order | Part 1 |
 | 3 | Problem statement: scattered sources (23), outdated copies (6), chatbots guess (8 of 24) | Part 1 |
 | 4 | Aim and scope: aim, O1 to O5, covers / does not involve | Part 2 |
@@ -40,42 +40,62 @@ Canva deck "AskWatt D2 slides" (11 slides, PDF copy in `docs/d2/AskWatt_D2_slide
 
 Slide text 24 pt or larger. Never show the `.env` file, the API key or an email address.
 
+## Recording files (one audio file per slide)
+
+| File | Lines | On screen |
+|---|---|---|
+| 01 | Part 1: "Hi, I'm Faizal…" to "…when it isn't sure." (recorded 20 Nov) | Slide 1 |
+| 02 | Part 1: "In this video: …" | Slide 2 |
+| 03 | Part 1: "It's needed because…" (recorded 20 Nov) | Slide 3 |
+| 04 | Part 2: both paragraphs | Slide 4 |
+| 05 | Part 3: "Here's the system…" | Slide 5 |
+| 06 | Part 3: "Tools were chosen…" | Slide 6 |
+| 07 | Part 4: "So far I've audited…" and "Each answer comes only…" | AskWatt clip |
+| 08 | Part 4: "In the pilot…" | Slide 7 |
+| 09 | Part 5: "Next semester is one chain…" | Slide 8 |
+| 10 | Part 5: "The two biggest risks…" | Slide 9 |
+| 11 | Part 6: both paragraphs | Slide 10 |
+| 12 | Part 7: "So the documents…" | Slide 11 |
+
+Leave a second of silence at the start and end of each file; if a line goes wrong, pause and say it again in the same file.
+
 ---
 
 ## Part 1 (0:00–0:30): Overview and problem
-**Show:** Slide 1, then Slide 2 for a second or two, then Slide 3 at "It's needed because"
+**Show:** Slide 1, then Slide 2 at "In this video", then Slide 3 at "It's needed because"
 
-> "Hi, I'm Faizal. This is AskWatt, my honours project: a support assistant for Heriot-Watt Malaysia students that answers only from official documents, shows its sources, and passes the question to staff when it isn't sure.
+> "Hi, I'm Faizal, and this is my honours project, *A Grounded University Support Assistant*, which I call AskWatt. It answers questions from Heriot-Watt Malaysia students only from official documents, shows its sources, and passes the question to staff when it isn't sure.
+> In this video: the problem, my aims, how AskWatt works, the pilot, my plan and risks, and success targets.
 > It's needed because answers on fees, deadlines and penalties are spread across 23 official sources, six of them outdated copies still online. And general chatbots guess: in my pilot, a plain language model was fully accurate on only 8 of 24 questions."
 
 ## Part 2 (0:30–1:00): Objectives and scope
 **Show:** Slide 4
 
-> "The objectives are: to study existing work; to build a knowledge base and a labelled test set; to build and compare four systems, from a simple FAQ bot and a plain language model to a document-based system with citations, and the same system with a confidence check; and to test the app with students.
-> The scope is fees, deadlines, mitigating circumstances, assessment and regulations, from public documents in English. It does not involve personal cases, personal data or live deployment."
+> "The objectives are: study existing work; build a knowledge base and a labelled test set; build and compare four systems, from an FAQ bot and a plain language model to a cited, document-based system, with and without a confidence check; and test the app with students.
+> The scope is fees, deadlines, mitigating circumstances and regulations, from public documents. It does not involve personal cases, personal data or live deployment."
 
 ## Part 3 (1:00–1:45): System diagram and tool choices
 **Show:** Slide 5, then Slide 6 at "Tools were chosen"
 
-> "Here's the system. Offline, the official PDFs are split into passages, each tagged with its document and page. For each question, hybrid search, keyword plus meaning-based, picks the five best passages. Gemini answers only from those, with a citation number on each sentence, or says the answer isn't there. In the final system, a confidence check then weighs the evidence behind each answer and sends weak cases to Student Services.
-> Tools were chosen for cost, laptop use and repeatable tests. Gemini Flash costs a third of a US cent per question; a local model was too slow. Hybrid search, because each method found passages the other missed. And plain Python, not LangChain, so every prompt stays visible."
+> "Here's the system. Offline, the official PDFs are split into passages, each tagged with its document and page. For each question, hybrid search, keyword plus meaning-based, picks the five best passages. Gemini answers only from those, with a citation number on each sentence, or says the answer isn't there. In the final system, a confidence check then weighs the evidence and sends weak cases to Student Services.
+> Tools were chosen for cost, laptop use and repeatable tests. Gemini Flash costs a third of a US cent per question; a local model was too slow. Hybrid search, because each method found passages the other missed. And plain Python, not LangChain, keeps every prompt visible."
 
 ## Part 4 (1:45–2:45): Preparation and feasibility
 **Show:** AskWatt clip, then Slide 7
 
 Record the clip first, with cached questions only (they cost nothing): the late-penalty example with S3, then "What time does the library close on Saturdays?", then the staff view, then S2 on the late-penalty question.
 
-> "So far I've audited 27 sources, built three of the four systems, run a 32-question pilot, and built this app. The usability study already has ethics approval.
+> "So far I've audited 27 sources, built three of the four systems, run a 32-question pilot, and built this app.
 > Each answer comes only from the documents, and each blue number links to the exact PDF page. When the documents don't cover a question, it doesn't guess: it passes it to Student Services with a ticket number, and staff see it in their own view. The plain model, on the same question, says 3% per day. The document says 30%."
 
 **Switch to Slide 7.**
 
-> "In the pilot, the document-based system was fully accurate on all 24 answerable questions and declined all 8 it couldn't answer. An AI judge agreed with my labels on 90 of 96. The pilot cost 37 US cents; the full plan, about 6 dollars, well within budget. These questions follow the documents closely, so the final test set is tougher."
+> "In the pilot, the document-based system was fully accurate on all 24 answerable questions and declined all 8 it couldn't answer. The pilot cost 37 US cents; the full plan, about 6 dollars, well within budget. These questions follow the documents closely, so the final test set is tougher."
 
 ## Part 5 (2:45–3:35): Plan and risks
 **Show:** Slide 8
 
-> "Next semester is one chain: test set, search tests, confidence check, one final test run, then analysis. The 140 test questions come first, in Weeks 1 to 3. The usability study needs the confidence check in the app, so it runs in Weeks 6 to 8, and Weeks 9 and 10 are a buffer."
+> "Next semester is one chain: test set, search tests, confidence check, one final test run, then analysis. The usability study needs the confidence check in the app, so it runs in Weeks 6 to 8, and Weeks 9 and 10 are a buffer."
 
 **Switch to Slide 9.**
 
@@ -84,7 +104,7 @@ Record the clip first, with cached questions only (they cost nothing): the late-
 ## Part 6 (3:35–4:30): Success targets and PLES
 **Show:** Slide 10 (left column first)
 
-> "Success is measurable. The document-based system should be fully accurate on at least 80% of answerable questions, 20 points ahead of the plain model, with a paired test. At least 85% of citations should support the answer. The confidence check should halve false answers while sending at most a fifth of answerable questions to staff, because a wrong fee answer costs a student more than a short wait. And answers should take under 10 seconds, with a usability score of at least 68."
+> "Success is measurable. The document-based system should be fully accurate on at least 80% of answerable questions, 20 points ahead of the plain model. At least 85% of citations should support the answer. The confidence check should halve false answers while sending at most a fifth of answerable questions to staff, because a wrong fee answer costs a student more than a short wait. And answers should take under 10 seconds, with a usability score of at least 68."
 
 **Now the right column.**
 
@@ -98,13 +118,12 @@ Record the clip first, with cached questions only (they cost nothing): the late-
 ---
 
 ## Words to practise (prominent R sounds with no easy swap)
-Heriot-Watt, Faizal (fine), university, Student Services, PDFs, citation, ringgit, PDPA, GDPR, ceiling (fine), "three", "risks", "first", "after", "chain" (fine).
+Heriot-Watt, Faizal (fine), Grounded, university, Student Services, PDFs, citation, ringgit, PDPA, GDPR, ceiling (fine), "three", "risks", "first", "after", "chain" (fine).
 
 Swaps already used: "fully accurate" for correct, "made up" for hallucinated, "app" for prototype, "search" for retrieval, "tougher" for harder, "targets" for criteria, "false answers" for wrong answers, "study" for research.
 
 ## Recording checklist
-1. Run AskWatt with cached questions and record the clip on its own first (Clipchamp screen recording), with the browser zoomed to 125% so the text is readable.
-2. Present the Canva slides full screen and record each part separately, with the narration.
-3. In Clipchamp: put the parts in order, drop the clip into Part 4, trim pauses, and normalise the audio.
-4. Check that it's under 5:00 (aim for 4:40), the text is readable at 1080p, and no key or email is visible.
-5. Export as MP4 (1080p, H.264), under 100 MB.
+1. Record the AskWatt clip with no voice (Snipping Tool or Xbox Game Bar), cached questions only, browser at 125%; go slowly.
+2. Record files 01 to 12 in a quiet room with the same mic; keep files outside the repo (`C:\Users\faiza\Projects\University\D2_recording\`) or send them in the chat.
+3. Claude assembles the video: cleans and levels the audio, cuts retakes and long pauses, fits the clip to file 07, adds subtitles, and exports an MP4 (1080p, H.264, under 100 MB, under 5:00).
+4. Watch the draft: check the length, the subtitles and that no key or email is visible.
