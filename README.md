@@ -36,7 +36,8 @@ python -m eval.score_systems      # results table: eval/results/pilot_systems_su
 python -m eval.model_signal       # S4 pilot: LLM "are these passages enough?" score (cached)
 python -m eval.confidence_pilot   # S4 pilot: retrieval and model signals (AUROC with bootstrap CI)
 python -m eval.label_evidence     # evidence for checking the reference labels (no LLM)
-python -m eval.plot_signals       # D1 figure: d1/images/signal_plot.tex
+python -m eval.plot_signals       # D1 figure source: docs/figures/signal_plot.tex
+python tools/render_figures.py      # D1 figures: docs/figures/*.tex -> d1/images/*.png
 python -m eval.cost_projection    # cost projection for the Semester 2 evaluation
 python -m src.demo                # demo: S1 vs search with citations
 python -m src.systems S3 "How many times can I resit a course?"

@@ -1,0 +1,21 @@
+% Semester 2 Gantt chart (Appendix A.1). Needs \usepackage{pgfgantt} and the arrows.meta TikZ library.
+\begin{ganttchart}[hgrid, vgrid={*{1}{dotted}}, x unit=0.62cm, y unit chart=0.5cm, y unit title=0.55cm,
+  title label font=\scriptsize, bar label font=\footnotesize, milestone label font=\footnotesize\itshape,
+  bar/.append style={fill=blue!25}, milestone/.append style={fill=orange!80},
+  link/.style={-{Stealth[length=1.6mm]}, gray, thick}]{1}{16}
+\gantttitle{Break}{2} \gantttitle{Semester 2, 2027 (teaching weeks)}{14} \\
+\gantttitle{Dec}{1} \gantttitle{Jan}{1} \gantttitlelist{1,...,14}{1} \\
+\ganttbar[name=kb]{Knowledge base, 60 dev. questions (after exams)}{1}{2} \\
+\ganttbar[name=ts]{Write and label 140 test questions}{3}{5} \\
+\ganttbar[name=e2]{E2 retrieval (development set)}{5}{6} \\
+\ganttbar[name=s4]{Build and tune S4 (E3)}{6}{7} \\
+\ganttbar[name=ui]{Complete interface with S4}{6}{8} \\
+\ganttbar[name=fin]{Final test run (E1--E3)}{7}{8} \\
+\ganttbar[name=e4]{Usability study E4 (ethics approved)}{8}{10} \\
+\ganttbar[name=an]{Analysis and error analysis}{8}{10} \\
+\ganttbar[name=d3]{Write dissertation (D3)}{7}{13} \\
+\ganttbar[bar/.append style={fill=gray!20}]{Buffer (no experiments)}{11}{12} \\
+\ganttmilestone{D3 due (1 Apr)}{13} \\
+\ganttbar[bar/.append style={fill=green!25}]{Q\&A session (D5)}{13}{16}
+\ganttlink{kb}{ts} \ganttlink{ts}{e2} \ganttlink{e2}{s4} \ganttlink{s4}{fin} \ganttlink{fin}{an} \ganttlink{ui}{e4}
+\end{ganttchart}

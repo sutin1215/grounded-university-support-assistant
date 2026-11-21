@@ -1,0 +1,18 @@
+% Semester 1 Gantt chart (Appendix A.1). Needs \usepackage{pgfgantt} and the arrows.meta TikZ library.
+\begin{ganttchart}[hgrid, vgrid={*{1}{dotted}}, x unit=0.62cm, y unit chart=0.5cm, y unit title=0.55cm,
+  title label font=\scriptsize, bar label font=\footnotesize, milestone label font=\footnotesize\itshape,
+  bar/.append style={fill=blue!25}, milestone/.append style={fill=orange!80}]{1}{12}
+\gantttitle{Semester 1, 2026 (teaching weeks)}{12} \\
+\gantttitlelist{1,...,12}{1} \\
+\ganttbar{Topic, supervision and records}{1}{3} \\
+\ganttbar{Literature review}{2}{9} \\
+\ganttbar{Document audit and source list}{4}{5} \\
+\ganttbar{Ethics application}{4}{7} \\
+\ganttbar{Pilot: ingestion, retrieval, S1}{7}{7} \\
+\ganttbar{Pilot: S2, S3, judge, S4 signals}{7}{9} \\
+\ganttbar{Interface prototype (AskWatt)}{8}{9} \\
+\ganttbar{D1 report}{6}{11} \\
+\ganttbar{D2 video}{10}{11} \\
+\ganttmilestone{Ethics application submitted (26 Oct)}{7} \\
+\ganttmilestone{D1 and D2 submitted (26 Nov)}{11}
+\end{ganttchart}

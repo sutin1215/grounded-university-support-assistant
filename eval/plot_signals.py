@@ -5,7 +5,7 @@ score), and one dot per pilot question: answerable questions above the line, una
 Near-miss unanswerable questions that score above at least one answerable question are labelled.
 The numbers come straight from the results file, so the figure can be regenerated after any rerun.
 
-Output: d1/images/signal_plot.tex
+Output: docs/figures/signal_plot.tex (then run tools/render_figures.py signal_plot for the PNG in d1/images)
 Usage:  python -m eval.plot_signals
 """
 import csv
@@ -73,7 +73,7 @@ def main():
         lines.append(dot(WIDTH + 0.5, y, colour))
         lines.append(f"  \\node[right,font=\\sffamily\\scriptsize] at ({WIDTH + 0.6:.2f},{y:.2f}) {{{text}}};")
     lines.append("\\end{tikzpicture}")
-    out = ROOT / "d1" / "images" / "signal_plot.tex"
+    out = ROOT / "docs" / "figures" / "signal_plot.tex"
     out.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"Wrote {out} ({len(rows)} questions)")
 

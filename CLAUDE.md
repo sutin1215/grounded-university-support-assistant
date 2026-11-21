@@ -58,7 +58,8 @@ Use the project venv: `.venv/Scripts/python.exe` (Windows). Run modules from the
 .venv/Scripts/python.exe -m eval.model_signal          # S4 model signal: LLM "are these passages enough?" (paid, cached)
 .venv/Scripts/python.exe -m eval.confidence_pilot      # S4 signal pilot (AUROC + bootstrap CI; includes the model signal)
 .venv/Scripts/python.exe -m eval.label_evidence        # evidence file for checking the reference labels (no LLM)
-.venv/Scripts/python.exe -m eval.plot_signals          # d1/images/signal_plot.tex from confidence_pilot.csv
+.venv/Scripts/python.exe -m eval.plot_signals          # docs/figures/signal_plot.tex from confidence_pilot.csv
+.venv/Scripts/python.exe tools/render_figures.py       # D1 figures: docs/figures/*.tex -> d1/images/*.png (needs a TeX install)
 .venv/Scripts/python.exe -m eval.cost_projection       # Semester 2 cost projection from measured pilot costs
 .venv/Scripts/python.exe -m src.systems S3 "question"  # one answer
 .venv/Scripts/python.exe tools/build_journal.py docs/journal/journal_NN_week_X.md
@@ -94,6 +95,8 @@ model_signal before confidence_pilot, then plot_signals; label_evidence after ju
 ## D1 report (`d1/`)
 
 - Edit only `d1/main.tex`, `d1/references.bib`, `d1/images/`, `d1/code/`. **Never edit `hwu_template/` or `acm_format/`.**
+- Keep the LaTeX simple, like the past samples: figures are images (`\includegraphics`), no TikZ or pgfgantt in the report.
+  Diagram sources live in `docs/figures/*.tex`; `tools/render_figures.py` renders them to `d1/images/*.png` (or redraw in draw.io/Canva).
 - Main body maximum 14 pages. ACM style, British spelling, plain clear English.
 - Overleaf is not synced. After editing, list the changed files so the student can upload them. If they edited in
   Overleaf, they must unzip the Overleaf source here first.
@@ -129,10 +132,23 @@ As of 11 Nov 2026 (Week 9), D1 final pass (ethics approved in November 2026):
   Arial + Libre Baskerville; no logo; notice says it is a student prototype). D1 Fig. 3 and docs/screenshots redone;
   final D1 check done (numbers vs eval/results, references, spelling, layout): main body ends on page 14.
   Old Atkinson/Literata font files in src/static/fonts are no longer used.
+- 20 Nov: D1 LaTeX simplified like the past samples: the six code-drawn figures (architecture, use case, signal plot, risk
+  heat map, two Gantt charts) are now PNG images; tikz, pgfgantt and float packages and the \screen macro removed.
+  Same text and layout (50 pages, main body ends on page 14).
+  Later 20 Nov: appendices slimmed: E is now Interface Screenshots and F Pilot Study Materials; the two long tables
+  (sources, answerable questions) are images (sources in docs/figures/table_*.tex); the prompts printout was dropped
+  (main text points to configs/prompts.yaml). 49 pages, main body still ends on page 14. (Forms placed inline as
+  images were tried and reverted at the student's request; forms stay as full PDF pages via pdfpages.)
+  References trimmed from 55 to 43 at the student's request (removed only second citations in pairs and tool/brand
+  citations, so no sentence lost its support; bib entries kept in references.bib). 48 pages, main body ends on page 14.
+  Use-case diagram enlarged to 0.9 linewidth; to keep 14 pages, the floats from 3.4.3 to the end of Section 4
+  (Fig 3, Tables 5 to 7, Fig 4) use [htb] instead of [H]. Main body still ends on page 14.
 - Next: send screenshots to the supervisor; D2 slides, clip and recording; repo private; submit 24 Nov.
 - Earlier next steps: student reads the PDF, uploads the d1 files to Overleaf; GenAI box last; D1 deadline 26 Nov.
   Then: 200-question test set, S4, E1 to E3, E4 usability study in Semester 2 Weeks 6-8.
 - Supervisor meetings: usually Tuesdays 11:30 (meeting 6 moved to Fri 13 Nov). Notes go in `docs/meetings/`, weekly journal in `docs/journal/`.
+- 21 Nov: examiner-style review fixed. Blind hand-label check (eval/blind_check.py, 30 answers, 10 per system): judge vs student 26/30, kappa 0.75 (S1 10/10, S2 6/10, S3 10/10; judge stricter on S2). D1 now says plain BM25, citations support 24/24 (SC2; 20/24 on gold page; Q18 and P04 answered from another page), and reports the blind check. Main body still ends on page 14 (cost breakdown and risk sentence trimmed from 4.3).
+- 22 Nov: layout pass. All main-body floats [H] and placed in their own subsection (Table 5 at the start of 3.5, Fig. 4 after the escalation paragraph; use case 0.87, Fig. 3 0.68 width); widow/club penalties; plainer Section 4 (judge vs reference labels moved to Appendix F.2); 12 uncited .bib entries removed; Notion timeline screenshot (d1/images/notion_timeline.jpg) in A.4; forms in C and D shown as page thumbnails (pdfpages removed). 48 -> 41 pages, main body still ends on page 14. GenAI texts untouched (student updates them last).
 
 ## Work in progress
 
